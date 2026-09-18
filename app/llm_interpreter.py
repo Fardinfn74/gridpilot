@@ -77,33 +77,44 @@ def _call_google(system: str, user_message: str, timeout: float) -> str:
 
     keys = config.LLM_API_KEY_POOL or [config.LLM_API_KEY]
     last_exc: Exception = RuntimeError("No API keys configured.")
+    # Fallback model order per key: primary model first, then gemini-2.0-flash
+    fallback_models = [config.LLM_MODEL]
+    if config.LLM_MODEL != "gemini-2.0-flash":
+        fallback_models.append("gemini-2.0-flash")
 
     for idx, api_key in enumerate(keys):
-        try:
-            client = genai.Client(api_key=api_key)
-            response = client.models.generate_content(
-                model=config.LLM_MODEL,
-                contents=user_message,
-                config=types.GenerateContentConfig(
-                    system_instruction=system,
-                    max_output_tokens=1024,
-                    temperature=0.0,
-                ),
-            )
-            if idx > 0:
-                logger.info("LLM: key #%d succeeded after %d failure(s).", idx + 1, idx)
-            return response.text
-        except Exception as exc:
-            err_str = str(exc).lower()
-            # Only fall through to next key on quota/rate-limit/auth errors
-            if any(kw in err_str for kw in ("quota", "rate", "429", "403", "resource exhausted", "api key")):
-                logger.warning("LLM: key #%d failed (%s), trying next key…", idx + 1, type(exc).__name__)
-                last_exc = exc
-                continue
-            # Any other error (parse, network, etc.) — raise immediately
-            raise
+        for model_name in fallback_models:
+            try:
+                client = genai.Client(api_key=api_key)
+                response = client.models.generate_content(
+                    model=model_name,
+                    contents=user_message,
+                    config=types.GenerateContentConfig(
+                        system_instruction=system,
+                        max_output_tokens=1024,
+                        temperature=0.0,
+                    ),
+                )
+                if idx > 0 or model_name != config.LLM_MODEL:
+                    logger.info("LLM: key #%d model=%s succeeded.", idx + 1, model_name)
+                return response.text
+            except Exception as exc:
+                err_str = str(exc).lower()
+                # 404 / not_found = model unavailable for this key, try next model/key
+                if any(kw in err_str for kw in ("404", "not_found", "no longer available", "not available")):
+                    logger.warning("LLM: key #%d model=%s not available, trying fallback…", idx + 1, model_name)
+                    last_exc = exc
+                    continue  # try next model for same key
+                # Quota/rate limit = try next key
+                if any(kw in err_str for kw in ("quota", "rate", "429", "403", "resource exhausted", "api key")):
+                    logger.warning("LLM: key #%d failed (%s), trying next key…", idx + 1, type(exc).__name__)
+                    last_exc = exc
+                    break  # break model loop, go to next key
+                # Any other error — raise immediately
+                raise
 
     raise last_exc
+
 
 
 

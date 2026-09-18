@@ -42,7 +42,6 @@
       overflow-x: hidden;
     }
 
-    /* Animated background */
     body::before {
       content: '';
       position: fixed; inset: 0; z-index: 0;
@@ -65,33 +64,42 @@
     header {
       position: sticky; top: 0; z-index: 200;
       display: flex; align-items: center; justify-content: space-between;
-      padding: 0 2rem;
-      height: 66px;
-      background: rgba(5,13,26,0.88);
+      padding: 0 1.5rem;
+      height: 62px;
+      background: rgba(5,13,26,0.92);
       backdrop-filter: blur(24px);
       border-bottom: 1px solid var(--border);
     }
     .logo {
       display: flex; align-items: center; gap: 10px;
-      font-size: 1.2rem; font-weight: 800; letter-spacing: -0.5px;
+      font-size: 1.15rem; font-weight: 800; letter-spacing: -0.5px;
     }
     .logo-icon {
-      width: 36px; height: 36px; border-radius: 10px;
-      background: linear-gradient(135deg, rgba(0,212,184,0.2), rgba(79,142,247,0.2));
-      border: 1px solid rgba(0,212,184,0.3);
+      width: 34px; height: 34px; border-radius: 9px;
+      background: linear-gradient(135deg, rgba(0,212,184,0.25), rgba(79,142,247,0.2));
+      border: 1px solid rgba(0,212,184,0.35);
       display: flex; align-items: center; justify-content: center;
     }
-    .logo-icon svg { width: 20px; height: 20px; }
-    .logo-text { color: var(--text); }
     .logo-text span { color: var(--teal); }
 
-    .header-center {
-      font-size: 0.78rem; color: var(--muted);
-      display: none;
-    }
-    @media (min-width: 900px) { .header-center { display: block; } }
+    .header-right { display: flex; align-items: center; gap: 0.75rem; }
 
-    .header-right { display: flex; align-items: center; gap: 1rem; }
+    /* System info pills */
+    .sys-pills {
+      display: none;
+      gap: 0.5rem;
+      align-items: center;
+    }
+    @media (min-width: 820px) { .sys-pills { display: flex; } }
+    .sys-pill {
+      font-size: 0.68rem; font-weight: 600; letter-spacing: 0.05em;
+      padding: 3px 10px; border-radius: 20px;
+      border: 1px solid var(--border);
+      color: var(--muted); background: var(--surface);
+      font-family: 'JetBrains Mono', monospace;
+      transition: all 0.3s;
+    }
+    .sys-pill.loaded { color: var(--teal); border-color: rgba(0,212,184,0.25); background: rgba(0,212,184,0.06); }
 
     .status-pill {
       display: flex; align-items: center; gap: 6px;
@@ -99,7 +107,7 @@
       padding: 4px 12px; border-radius: 20px;
       background: rgba(52,211,153,0.1);
       border: 1px solid rgba(52,211,153,0.2);
-      color: var(--green);
+      color: var(--green); transition: all 0.3s;
     }
     .status-pill.offline {
       background: rgba(248,113,113,0.1);
@@ -107,95 +115,181 @@
       color: var(--red);
     }
     .status-dot {
-      width: 7px; height: 7px; border-radius: 50%;
-      background: currentColor;
-      box-shadow: 0 0 6px currentColor;
-      animation: pulse 2s infinite;
+      width: 7px; height: 7px; border-radius: 50%; background: var(--green);
+      animation: pulse 2s ease-in-out infinite;
     }
+    .offline .status-dot { background: var(--red); animation: none; }
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
 
+    /* ── TOAST ── */
+    #toast {
+      position: fixed; top: 76px; right: 1.5rem; z-index: 500;
+      background: rgba(5,25,15,0.96); border: 1px solid rgba(52,211,153,0.35);
+      border-radius: 12px; padding: 12px 18px;
+      display: flex; align-items: center; gap: 10px;
+      font-size: 0.82rem; color: var(--green); font-weight: 600;
+      transform: translateX(120%);
+      transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+      pointer-events: none;
+    }
+    #toast.show { transform: translateX(0); }
+
     /* ── LAYOUT ── */
-    main {
-      position: relative; z-index: 1;
+    .page { position: relative; z-index: 1; }
+
+    /* Hero strip */
+    .hero {
+      text-align: center;
+      padding: 2.5rem 1.5rem 1.5rem;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(0,212,184,0.08); border: 1px solid rgba(0,212,184,0.2);
+      border-radius: 20px; padding: 4px 14px;
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em;
+      color: var(--teal); text-transform: uppercase; margin-bottom: 1rem;
+    }
+    .hero h1 {
+      font-size: clamp(1.6rem, 4vw, 2.6rem);
+      font-weight: 900; letter-spacing: -0.04em; line-height: 1.1;
+      background: linear-gradient(135deg, #fff 0%, var(--teal) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.6rem;
+    }
+    .hero p {
+      font-size: 0.92rem; color: var(--muted); max-width: 520px;
+      margin: 0 auto; line-height: 1.7;
+    }
+
+    /* Stat strip */
+    .stat-strip {
+      display: flex; justify-content: center; gap: 2rem;
+      padding: 1rem 1.5rem;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: rgba(255,255,255,0.015);
+    }
+    .stat-item { text-align: center; }
+    .stat-val { font-size: 1.3rem; font-weight: 900; color: var(--teal); font-family: 'JetBrains Mono', monospace; }
+    .stat-lbl { font-size: 0.65rem; color: var(--muted); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; margin-top: 2px; }
+
+    /* ── MAIN GRID ── */
+    .main-grid {
       display: grid;
-      grid-template-columns: 400px 1fr;
-      gap: 1.5rem;
-      padding: 1.5rem 2rem 4rem;
+      grid-template-columns: 420px 1fr;
+      gap: 1.25rem;
+      padding: 1.25rem 1.5rem 2rem;
       max-width: 1600px; margin: 0 auto;
     }
-    @media (max-width: 1100px) { main { grid-template-columns: 1fr; } }
+    @media (max-width: 1024px) { .main-grid { grid-template-columns: 1fr; } }
 
-    /* ── CARDS ── */
+    /* ── CARD ── */
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 1.4rem 1.5rem;
-      backdrop-filter: blur(12px);
-      box-shadow: var(--shadow);
-      transition: border-color 0.25s;
+      padding: 1.25rem 1.4rem;
     }
-    .card:hover { border-color: rgba(255,255,255,0.13); }
-
     .card-title {
-      font-size: 0.68rem; font-weight: 700;
-      letter-spacing: 0.14em; text-transform: uppercase;
-      color: var(--muted); margin-bottom: 1rem;
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--muted);
+      margin-bottom: 1rem;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .card-title::before {
+      content: ''; width: 3px; height: 14px; border-radius: 2px;
+      background: var(--teal);
     }
 
-    /* ── FORM ELEMENTS ── */
-    label {
-      display: block;
-      font-size: 0.72rem; color: var(--muted); font-weight: 500;
-      margin-bottom: 4px;
+    /* ── FIELDS ── */
+    .field { margin-bottom: 0.9rem; }
+    .field label {
+      display: block; font-size: 0.72rem; font-weight: 600;
+      color: var(--muted); margin-bottom: 5px; letter-spacing: 0.05em;
+      text-transform: uppercase;
     }
-    input[type=text], input[type=number], textarea {
-      width: 100%;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      color: var(--text);
-      font-family: inherit; font-size: 0.88rem;
-      padding: 9px 12px;
-      outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
+    .field input, .field select {
+      width: 100%; background: var(--surface2);
+      border: 1px solid var(--border); border-radius: 9px;
+      padding: 9px 12px; color: var(--text);
+      font-family: inherit; font-size: 0.85rem;
+      outline: none; transition: border-color 0.2s;
     }
-    input[type=text]:focus, input[type=number]:focus, textarea:focus {
-      border-color: var(--teal);
-      box-shadow: 0 0 0 3px var(--teal-dim);
-    }
-    input[type=number] { font-family: 'JetBrains Mono', monospace; }
-    textarea { resize: vertical; min-height: 68px; font-size: 0.85rem; line-height: 1.5; }
-    ::placeholder { color: var(--muted); }
+    .field input:focus, .field select:focus { border-color: rgba(0,212,184,0.4); }
+    .field select { appearance: none; cursor: pointer; }
 
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem; }
-    .form-grid .full { grid-column: 1 / -1; }
-    .field { display: flex; flex-direction: column; gap: 4px; }
-
-    /* Notes */
-    .note-row { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 0.55rem; }
-    .note-num {
-      flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%;
-      background: var(--teal-dim); color: var(--teal);
-      font-size: 0.68rem; font-weight: 700;
-      display: flex; align-items: center; justify-content: center;
-      margin-top: 10px;
-    }
-    .btn-del-note {
-      flex-shrink: 0; background: none; border: none;
-      color: var(--muted); font-size: 0.95rem; cursor: pointer;
-      padding: 4px; margin-top: 8px; transition: color 0.2s;
-    }
-    .btn-del-note:hover { color: var(--red); }
-
-    .btn-add-note {
-      width: 100%; background: none;
-      border: 1px dashed var(--border);
-      border-radius: 8px; color: var(--muted);
-      font-size: 0.8rem; padding: 8px; cursor: pointer;
+    /* ── PRESET SELECTOR ── */
+    .preset-bar { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
+    .btn-preset {
+      flex: 1; min-width: 80px;
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 8px; color: var(--muted); font-size: 0.72rem;
+      padding: 7px 10px; cursor: pointer; font-family: inherit;
+      font-weight: 600; text-align: center;
       transition: all 0.2s;
     }
-    .btn-add-note:hover { border-color: var(--teal); color: var(--teal); }
+    .btn-preset:hover { border-color: var(--teal); color: var(--teal); }
+    .btn-preset.active { border-color: var(--teal); color: var(--teal); background: rgba(0,212,184,0.08); }
+
+    /* ── NOTES ── */
+    .note-row {
+      display: grid; grid-template-columns: 22px 1fr 28px; gap: 6px;
+      margin-bottom: 8px; align-items: start;
+    }
+    .note-num {
+      width: 22px; height: 22px; border-radius: 50%;
+      background: rgba(0,212,184,0.1); border: 1px solid rgba(0,212,184,0.2);
+      color: var(--teal); font-size: 0.65rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center; margin-top: 2px;
+    }
+    .note-input {
+      width: 100%; background: var(--surface2);
+      border: 1px solid var(--border); border-radius: 9px;
+      padding: 9px 11px; color: var(--text);
+      font-family: inherit; font-size: 0.8rem; line-height: 1.5;
+      outline: none; resize: none; transition: border-color 0.2s;
+    }
+    .note-input:focus { border-color: rgba(0,212,184,0.4); }
+    .btn-del-note {
+      width: 26px; height: 26px; border-radius: 6px;
+      background: none; border: 1px solid transparent;
+      color: var(--muted); font-size: 0.7rem; cursor: pointer;
+      transition: all 0.2s; margin-top: 2px;
+    }
+    .btn-del-note:hover { border-color: rgba(248,113,113,0.3); color: var(--red); }
+    .btn-add-note {
+      width: 100%; background: none;
+      border: 1px dashed rgba(0,212,184,0.2); border-radius: 8px;
+      color: var(--teal); font-size: 0.75rem; font-family: inherit;
+      padding: 7px; cursor: pointer; transition: all 0.2s;
+      font-weight: 600;
+    }
+    .btn-add-note:hover { background: rgba(0,212,184,0.05); border-style: solid; }
+
+    /* ── BATTERY GRID ── */
+    .battery-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+
+    /* ── HOURS TABLE ── */
+    .hours-table-wrap {
+      overflow: auto; max-height: 260px; border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+    .hours-table-wrap table { width: 100%; border-collapse: collapse; }
+    .hours-table-wrap th {
+      font-size: 0.65rem; font-weight: 700; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.07em;
+      padding: 6px 10px; background: rgba(255,255,255,0.03);
+      border-bottom: 1px solid var(--border); white-space: nowrap;
+      position: sticky; top: 0; z-index: 1;
+    }
+    .hours-table-wrap td {
+      padding: 5px 10px; font-size: 0.78rem;
+      color: var(--muted); border-bottom: 1px solid rgba(255,255,255,0.03);
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .hours-table-wrap tr:last-child td { border-bottom: none; }
+    .hours-table-wrap tr:hover td { background: rgba(255,255,255,0.02); }
 
     /* Collapsible */
     .section-head {
@@ -204,40 +298,38 @@
     }
     .btn-collapse {
       background: none; border: none; color: var(--muted);
-      font-size: 0.75rem; cursor: pointer;
+      font-size: 0.72rem; cursor: pointer;
       display: flex; align-items: center; gap: 4px;
       font-family: inherit; transition: color 0.2s;
     }
     .btn-collapse:hover { color: var(--text); }
     .chevron { transition: transform 0.25s; display: inline-block; }
     .btn-collapse.open .chevron { transform: rotate(180deg); }
-    .collapsible { overflow: hidden; transition: max-height 0.3s ease; }
-
-    /* Scenario bar */
-    .scenario-bar { display: flex; gap: 0.75rem; align-items: flex-end; }
-    .scenario-bar .field { flex: 1; }
-    .btn-load {
-      background: var(--surface2); border: 1px solid var(--border);
-      border-radius: 8px; color: var(--muted); font-size: 0.8rem;
-      padding: 9px 14px; cursor: pointer; white-space: nowrap;
-      font-family: inherit; transition: all 0.2s;
-    }
-    .btn-load:hover { border-color: var(--blue); color: var(--blue); }
+    .collapsible { overflow: hidden; transition: max-height 0.35s ease; }
 
     /* Optimize button */
     #btn-optimize {
-      width: 100%; padding: 15px;
+      width: 100%; padding: 16px;
       background: linear-gradient(135deg, #00d4b8 0%, #00a896 100%);
       border: none; border-radius: 12px;
       color: #05111f; font-family: inherit;
-      font-size: 1rem; font-weight: 700;
+      font-size: 1rem; font-weight: 800;
       cursor: pointer; letter-spacing: 0.01em;
-      box-shadow: 0 4px 28px rgba(0,212,184,0.35);
+      box-shadow: 0 4px 32px rgba(0,212,184,0.4);
       transition: all 0.2s;
+      position: relative; overflow: hidden;
     }
+    #btn-optimize::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+      transform: translateX(-100%);
+      transition: transform 0.6s;
+    }
+    #btn-optimize:hover:not(:disabled)::before { transform: translateX(100%); }
     #btn-optimize:hover:not(:disabled) {
       transform: translateY(-2px);
-      box-shadow: 0 8px 36px rgba(0,212,184,0.5);
+      box-shadow: 0 8px 40px rgba(0,212,184,0.55);
     }
     #btn-optimize:disabled {
       background: var(--surface2); color: var(--muted);
@@ -245,7 +337,6 @@
     }
     .btn-inner { display: flex; align-items: center; justify-content: center; gap: 8px; }
 
-    /* Spinner */
     .spinner {
       width: 18px; height: 18px;
       border: 2px solid rgba(5,17,31,0.3);
@@ -255,39 +346,38 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ── PROGRESS STEPS ── */
+    /* Progress steps */
     #progress-steps {
       display: none;
-      background: rgba(0,212,184,0.05);
-      border: 1px solid rgba(0,212,184,0.15);
+      background: rgba(0,212,184,0.04);
+      border: 1px solid rgba(0,212,184,0.12);
       border-radius: 10px;
-      padding: 14px 16px;
+      padding: 13px 16px;
     }
     .step-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
     .step {
       display: flex; align-items: center; gap: 10px;
-      font-size: 0.82rem; color: var(--muted);
-      transition: color 0.3s;
+      font-size: 0.8rem; color: var(--muted); transition: color 0.3s;
     }
     .step.active { color: var(--teal); }
     .step.done { color: var(--green); }
-    .step-icon { font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0; }
+    .step-icon { font-size: 0.95rem; width: 18px; text-align: center; flex-shrink: 0; }
     .step-spinner {
-      width: 14px; height: 14px; flex-shrink: 0;
+      width: 13px; height: 13px; flex-shrink: 0;
       border: 2px solid var(--teal-dim);
       border-top-color: var(--teal);
       border-radius: 50%;
       animation: spin 0.65s linear infinite;
     }
 
-    /* ── ERROR ── */
+    /* Error */
     #error-toast {
       display: none;
-      background: rgba(248,113,113,0.08);
-      border: 1px solid rgba(248,113,113,0.25);
+      background: rgba(248,113,113,0.07);
+      border: 1px solid rgba(248,113,113,0.22);
       border-radius: 10px;
-      padding: 12px 16px;
-      font-size: 0.85rem; color: #fca5a5;
+      padding: 11px 15px;
+      font-size: 0.83rem; color: #fca5a5;
     }
 
     /* ── RIGHT PANEL ── */
@@ -297,35 +387,62 @@
     #empty-state {
       flex: 1; display: flex; flex-direction: column;
       align-items: center; justify-content: center;
-      min-height: 420px; text-align: center;
-      padding: 3rem;
+      min-height: 380px; text-align: center; padding: 3rem;
     }
     .empty-icon {
-      width: 80px; height: 80px; border-radius: 20px;
+      width: 76px; height: 76px; border-radius: 18px;
       background: linear-gradient(135deg, rgba(0,212,184,0.1), rgba(79,142,247,0.1));
       border: 1px solid rgba(0,212,184,0.2);
       display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 1.5rem;
+      margin: 0 auto 1.4rem;
+      animation: float 3s ease-in-out infinite;
     }
-    #empty-state h3 { font-size: 1.2rem; font-weight: 700; color: var(--text); opacity: 0.5; margin-bottom: 0.5rem; }
-    #empty-state p { font-size: 0.85rem; color: var(--muted); max-width: 300px; line-height: 1.7; }
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+    #empty-state h3 { font-size: 1.1rem; font-weight: 700; color: var(--text); opacity: 0.45; margin-bottom: 0.5rem; }
+    #empty-state p { font-size: 0.83rem; color: var(--muted); max-width: 280px; line-height: 1.7; }
+
+    /* History pills */
+    #history-strip {
+      display: none;
+      gap: 0.5rem; flex-wrap: wrap;
+      padding: 0.75rem 1rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+    .history-label {
+      font-size: 0.65rem; font-weight: 700; color: var(--muted);
+      letter-spacing: 0.08em; text-transform: uppercase;
+      width: 100%; margin-bottom: 4px;
+    }
+    .history-pill {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 20px; padding: 4px 12px;
+      font-size: 0.7rem; color: var(--muted);
+      cursor: pointer; transition: all 0.2s;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .history-pill:hover { border-color: var(--teal); color: var(--teal); }
+    .history-pill .h-cost { color: var(--green); margin-left: 4px; font-weight: 700; }
 
     /* Results */
     #results { display: none; flex-direction: column; gap: 1rem; }
 
-    /* ── METRICS ROW ── */
-    .metrics-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
-    @media (max-width: 900px) { .metrics-row { grid-template-columns: repeat(2, 1fr); } }
+    /* Metrics row */
+    .metrics-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; }
+    @media (max-width: 700px) { .metrics-row { grid-template-columns: repeat(2, 1fr); } }
 
     .metric-card {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.2rem 1.4rem;
+      border-radius: 14px;
+      padding: 1.1rem 1.2rem;
       position: relative; overflow: hidden;
-      transition: transform 0.2s;
+      transition: transform 0.2s, border-color 0.2s;
+      cursor: default;
     }
-    .metric-card:hover { transform: translateY(-2px); }
+    .metric-card:hover { transform: translateY(-3px); border-color: rgba(255,255,255,0.14); }
     .metric-card::before {
       content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
     }
@@ -333,350 +450,371 @@
     .metric-card.saving::before { background: linear-gradient(90deg, var(--green), var(--teal)); }
     .metric-card.grid::before   { background: linear-gradient(90deg, var(--red), var(--orange)); }
     .metric-card.peak::before   { background: linear-gradient(90deg, var(--purple), var(--blue)); }
-
-    /* Glow dot */
     .metric-card::after {
-      content: '';
-      position: absolute; right: -20px; bottom: -20px;
-      width: 80px; height: 80px; border-radius: 50%;
-      opacity: 0.08;
+      content: ''; position: absolute; right: -20px; bottom: -20px;
+      width: 80px; height: 80px; border-radius: 50%; opacity: 0.07;
     }
     .metric-card.cost::after   { background: var(--teal); }
     .metric-card.saving::after { background: var(--green); }
     .metric-card.grid::after   { background: var(--red); }
     .metric-card.peak::after   { background: var(--purple); }
 
-    .metric-label { font-size: 0.68rem; color: var(--muted); font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.5rem; }
-    .metric-value { font-size: 1.65rem; font-weight: 900; letter-spacing: -0.03em; font-family: 'JetBrains Mono', monospace; line-height: 1; }
+    .metric-label { font-size: 0.65rem; color: var(--muted); font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.4rem; }
+    .metric-value { font-size: 1.55rem; font-weight: 900; letter-spacing: -0.03em; font-family: 'JetBrains Mono', monospace; line-height: 1; }
     .metric-card.cost .metric-value   { color: var(--teal); }
     .metric-card.saving .metric-value { color: var(--green); }
     .metric-card.grid .metric-value   { color: var(--red); }
     .metric-card.peak .metric-value   { color: var(--purple); }
-    .metric-unit { font-size: 0.75rem; font-weight: 400; color: var(--muted); margin-left: 3px; font-family: 'Inter', sans-serif; }
-    .metric-sub { font-size: 0.72rem; color: var(--muted); margin-top: 4px; }
+    .metric-unit { font-size: 0.72rem; font-weight: 400; color: var(--muted); margin-left: 2px; font-family: 'Inter', sans-serif; }
+    .metric-sub { font-size: 0.68rem; color: var(--muted); margin-top: 4px; }
     .metric-sub .up   { color: var(--green); }
     .metric-sub .down { color: var(--red); }
 
-    /* ── CHARTS ROW ── */
-    .charts-row { display: grid; grid-template-columns: 1fr 300px; gap: 1rem; }
-    @media (max-width: 900px) { .charts-row { grid-template-columns: 1fr; } }
-
-    .chart-wrapper { position: relative; height: 270px; }
-
-    /* Donut */
-    .donut-wrapper {
-      position: relative; height: 270px;
-      display: flex; flex-direction: column;
-    }
-    .donut-inner {
-      position: relative; flex: 1;
-    }
+    /* Charts row */
+    .charts-row { display: grid; grid-template-columns: 1fr 280px; gap: 0.75rem; }
+    @media (max-width: 800px) { .charts-row { grid-template-columns: 1fr; } }
+    .chart-wrapper { position: relative; height: 240px; }
+    .donut-wrapper { position: relative; height: 240px; display: flex; flex-direction: column; }
+    .donut-inner { position: relative; flex: 1; }
     .donut-center {
       position: absolute; top: 50%; left: 50%;
       transform: translate(-50%, -50%);
       text-align: center; pointer-events: none;
     }
-    .donut-pct { font-size: 1.8rem; font-weight: 900; color: var(--green); font-family: 'JetBrains Mono', monospace; }
-    .donut-lbl { font-size: 0.65rem; color: var(--muted); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+    .donut-pct { font-size: 1.6rem; font-weight: 900; color: var(--green); font-family: 'JetBrains Mono', monospace; }
+    .donut-lbl { font-size: 0.6rem; color: var(--muted); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
 
-    /* ── DIRECTIVES ── */
+    /* Summary card */
+    #plan-summary-card {
+      background: rgba(0,212,184,0.04);
+      border: 1px solid rgba(0,212,184,0.12);
+      border-radius: 12px; padding: 12px 16px;
+    }
+    #plan-summary-card .sum-lbl {
+      font-size: 0.65rem; font-weight: 700; color: var(--teal);
+      letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px;
+    }
+    #plan-summary-text {
+      font-size: 0.83rem; color: var(--text); line-height: 1.65;
+    }
+
+    /* Directives */
     .directive-list { display: flex; flex-direction: column; gap: 0.5rem; }
     .d-card {
       display: flex; gap: 10px; align-items: flex-start;
       background: var(--surface2); border: 1px solid var(--border);
-      border-radius: 10px; padding: 11px 13px;
+      border-radius: 10px; padding: 10px 13px;
       transition: border-color 0.2s;
     }
-    .d-card:hover { border-color: rgba(255,255,255,0.15); }
+    .d-card:hover { border-color: rgba(255,255,255,0.14); }
     .d-idx {
       flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%;
       background: var(--surface2); color: var(--muted);
-      font-size: 0.65rem; font-weight: 700;
-      display: flex; align-items: center; justify-content: center;
-      margin-top: 2px;
+      font-size: 0.62rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center; margin-top: 2px;
     }
     .d-badge {
       flex-shrink: 0;
-      font-size: 0.65rem; font-weight: 700;
-      padding: 3px 8px; border-radius: 20px;
-      white-space: nowrap; margin-top: 2px;
+      font-size: 0.62rem; font-weight: 700;
+      padding: 2px 8px; border-radius: 12px;
+      text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px;
     }
-    .d-badge.solar_reduction      { background: rgba(251,191,36,0.15);  color: var(--yellow); }
-    .d-badge.minimum_battery_reserve { background: rgba(52,211,153,0.15); color: var(--green); }
-    .d-badge.no_charge_window     { background: rgba(167,139,250,0.15); color: var(--purple); }
-    .d-badge.no_discharge_window  { background: rgba(79,142,247,0.15);  color: var(--blue); }
-    .d-badge.max_grid_window      { background: rgba(248,113,113,0.15); color: var(--red); }
-    .d-badge.no_op                { background: rgba(100,116,139,0.12); color: var(--muted); }
-    .d-body { flex: 1; }
-    .d-explanation { font-size: 0.82rem; color: var(--muted); line-height: 1.5; }
-    .d-adj { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--teal); margin-top: 3px; }
+    .solar_reduction     { background:rgba(251,191,36,0.15); color:var(--yellow); }
+    .minimum_battery_reserve { background:rgba(52,211,153,0.12); color:var(--green); }
+    .no_charge_window    { background:rgba(167,139,250,0.12); color:var(--purple); }
+    .no_discharge_window { background:rgba(248,113,113,0.12); color:var(--red); }
+    .max_grid_window     { background:rgba(79,142,247,0.12); color:var(--blue); }
+    .no_op               { background:rgba(100,116,139,0.15); color:var(--muted); }
+    .d-body { flex: 1; min-width: 0; }
+    .d-explanation { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+    .d-adj { font-size: 0.7rem; color: var(--teal); font-family: 'JetBrains Mono', monospace; margin-top: 4px; opacity: 0.8; }
 
-    /* ── TABLE ── */
-    .table-scroll { overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; font-size: 0.79rem; }
-    thead th {
-      text-align: left; padding: 7px 10px;
-      font-size: 0.65rem; font-weight: 700; color: var(--muted);
-      letter-spacing: 0.1em; text-transform: uppercase;
-      border-bottom: 1px solid var(--border);
+    /* Hourly plan table */
+    .plan-table-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border); }
+    .plan-table-wrap table { width: 100%; border-collapse: collapse; }
+    .plan-table-wrap th {
+      font-size: 0.62rem; font-weight: 700; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.07em;
+      padding: 8px 10px; background: rgba(255,255,255,0.03);
+      border-bottom: 1px solid var(--border); white-space: nowrap;
+      position: sticky; top: 0;
     }
-    tbody tr { border-bottom: 1px solid rgba(255,255,255,0.025); transition: background 0.15s; }
-    tbody tr:hover { background: var(--surface2); }
-    tbody td { padding: 6px 10px; font-family: 'JetBrains Mono', monospace; color: var(--text); }
-    tbody td:first-child { color: var(--muted); }
-    .act-charge    { color: var(--green); font-weight: 600; }
-    .act-discharge { color: var(--red);   font-weight: 600; }
+    .plan-table-wrap td {
+      padding: 6px 10px; font-size: 0.75rem;
+      color: var(--muted); border-bottom: 1px solid rgba(255,255,255,0.025);
+      font-family: 'JetBrains Mono', monospace; white-space: nowrap;
+    }
+    .plan-table-wrap tr:last-child td { border-bottom: none; }
+    .plan-table-wrap tr:hover td { background: rgba(255,255,255,0.02); }
+    .row-charge    td { border-left: 2px solid var(--purple) !important; }
+    .row-discharge td { border-left: 2px solid var(--green) !important; }
+    .act-charge    { color: var(--purple) !important; font-weight: 700; }
+    .act-discharge { color: var(--green) !important; font-weight: 700; }
     .act-idle      { color: var(--muted); }
 
-    /* CSV button */
-    .card-actions { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
-    .btn-csv {
+    /* Export button */
+    #btn-csv {
       background: var(--surface2); border: 1px solid var(--border);
-      border-radius: 8px; color: var(--muted); font-size: 0.75rem;
-      padding: 6px 12px; cursor: pointer; font-family: inherit;
-      display: flex; align-items: center; gap: 5px;
+      border-radius: 9px; color: var(--muted); font-size: 0.78rem;
+      padding: 8px 16px; cursor: pointer; font-family: inherit;
+      display: flex; align-items: center; gap: 6px;
       transition: all 0.2s;
     }
-    .btn-csv:hover { border-color: var(--green); color: var(--green); }
+    #btn-csv:hover { border-color: var(--teal); color: var(--teal); }
 
-    /* Summary */
-    #plan-summary-text { font-size: 0.87rem; color: var(--muted); line-height: 1.7; }
-
-    /* Highlight rows by action */
-    tr.row-charge { border-left: 2px solid rgba(52,211,153,0.3); }
-    tr.row-discharge { border-left: 2px solid rgba(248,113,113,0.3); }
-
-    /* ── FOOTER ── */
+    /* Footer */
     footer {
-      position: relative; z-index: 1;
-      text-align: center; padding: 2rem;
-      font-size: 0.75rem; color: var(--muted);
+      text-align: center; padding: 1.5rem;
+      font-size: 0.72rem; color: var(--muted);
       border-top: 1px solid var(--border);
     }
     footer a { color: var(--teal); text-decoration: none; }
     footer a:hover { text-decoration: underline; }
 
-    /* Fade-in animation */
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(16px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    .fade-up { animation: fadeUp 0.4s ease both; }
+    /* Scroll bar */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
   </style>
 </head>
 <body>
+<div class="page">
 
 <!-- ── HEADER ── -->
 <header>
   <div class="logo">
     <div class="logo-icon">
-      <svg viewBox="0 0 24 24" fill="none">
-        <path d="M13 2L3 14h8l-2 8 12-12h-8l2-8z" fill="url(#lg)" stroke-width="0"/>
-        <defs>
-          <linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#00d4b8"/>
-            <stop offset="100%" stop-color="#4f8ef7"/>
-          </linearGradient>
-        </defs>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d4b8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
       </svg>
     </div>
-    <span class="logo-text">GridPilot <span>AI</span></span>
+    <div class="logo-text">Grid<span>Pilot</span> AI</div>
   </div>
-  <div class="header-center">LLM-powered 24-hour campus energy optimizer · BUP CSE Fest 2026</div>
+
   <div class="header-right">
+    <div class="sys-pills" id="sys-pills">
+      <div class="sys-pill" id="pill-model">Loading…</div>
+      <div class="sys-pill" id="pill-keys">—</div>
+      <div class="sys-pill" id="pill-optimizer">PuLP + CBC</div>
+    </div>
     <div class="status-pill" id="status-pill">
       <div class="status-dot"></div>
-      <span id="status-text">Checking…</span>
+      <span id="status-text">Connecting…</span>
     </div>
   </div>
 </header>
 
-<!-- ── MAIN ── -->
-<main>
+<!-- ── SUCCESS TOAST ── -->
+<div id="toast">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+  <span id="toast-text">Plan optimized successfully!</span>
+</div>
 
-  <!-- ════ LEFT PANEL ════ -->
+<!-- ── HERO ── -->
+<div class="hero">
+  <div class="hero-badge">
+    ⚡ GridWise LLM · BUP CSE Fest 2026
+  </div>
+  <h1>Plain English → Optimal Energy Plan</h1>
+  <p>Tell your energy system what's happening today. GridPilot re-optimizes the next 24 hours instantly, safely, and provably cheaper.</p>
+</div>
+
+<!-- ── STAT STRIP ── -->
+<div class="stat-strip">
+  <div class="stat-item"><div class="stat-val">10/10</div><div class="stat-lbl">Sample Cases</div></div>
+  <div class="stat-item"><div class="stat-val">&lt;10s</div><div class="stat-lbl">Response Time</div></div>
+  <div class="stat-item"><div class="stat-val">5</div><div class="stat-lbl">API Key Pool</div></div>
+  <div class="stat-item"><div class="stat-val">MILP</div><div class="stat-lbl">Optimizer</div></div>
+</div>
+
+<!-- ── MAIN GRID ── -->
+<div class="main-grid">
+
+  <!-- LEFT PANEL -->
   <div style="display:flex;flex-direction:column;gap:1rem;">
 
-    <!-- Scenario -->
+    <!-- Scenario card -->
     <div class="card">
       <div class="card-title">Scenario</div>
-      <div class="scenario-bar">
-        <div class="field"><label for="scenario-id">Scenario ID</label>
-          <input type="text" id="scenario-id" value="DEMO-001" placeholder="e.g. CAMPUS-2026-09-18" />
-        </div>
-        <button class="btn-load" id="btn-load-sample">⚡ Load Sample</button>
+
+      <!-- Preset buttons -->
+      <div class="preset-bar">
+        <button class="btn-preset active" id="preset-default" onclick="loadPreset('default')">Default</button>
+        <button class="btn-preset" id="preset-sample01" onclick="loadPreset('sample01')">⚡ SAMPLE-01</button>
+        <button class="btn-preset" id="preset-heatwave" onclick="loadPreset('heatwave')">🌡 Heatwave</button>
+      </div>
+
+      <div class="field">
+        <label>Scenario ID</label>
+        <input type="text" id="scenario-id" value="DEMO-001" placeholder="e.g. CAMPUS-2026-09-18" />
       </div>
     </div>
 
     <!-- Operator Notes -->
     <div class="card">
-      <div class="section-head">
-        <div class="card-title" style="margin:0">Operator Notes <span style="color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0;font-size:0.78rem">(1–3)</span></div>
-      </div>
+      <div class="card-title">Operator Notes</div>
       <div id="notes-container"></div>
-      <button class="btn-add-note" id="btn-add-note">＋ Add another note</button>
+      <button class="btn-add-note" id="btn-add-note">+ Add another note</button>
     </div>
 
     <!-- Battery -->
     <div class="card">
       <div class="section-head">
-        <div class="card-title" style="margin:0">Battery Configuration</div>
-        <button class="btn-collapse open" id="bat-toggle" data-target="bat-body">
-          collapse <span class="chevron">▾</span>
-        </button>
+        <div class="card-title" style="margin:0">Battery Config</div>
+        <button class="btn-collapse open" data-target="battery-body">collapse <span class="chevron">▾</span></button>
       </div>
-      <div class="collapsible" id="bat-body" style="max-height:400px">
-        <div class="form-grid">
-          <div class="field"><label>Capacity (kWh)</label><input type="number" id="bat-cap" value="200" min="0" step="any"/></div>
-          <div class="field"><label>Initial Energy (kWh)</label><input type="number" id="bat-init" value="100" min="0" step="any"/></div>
-          <div class="field"><label>Min Reserve (kWh)</label><input type="number" id="bat-min" value="20" min="0" step="any"/></div>
-          <div class="field"><label>Max Charge (kWh/h)</label><input type="number" id="bat-maxc" value="50" min="0" step="any"/></div>
-          <div class="field full"><label>Max Discharge (kWh/h)</label><input type="number" id="bat-maxd" value="50" min="0" step="any"/></div>
+      <div class="collapsible" id="battery-body">
+        <div class="battery-grid">
+          <div class="field"><label>Capacity (kWh)</label><input type="number" id="bat-cap" value="200" min="0" step="any" /></div>
+          <div class="field"><label>Initial (kWh)</label><input type="number" id="bat-init" value="100" min="0" step="any" /></div>
+          <div class="field"><label>Min Reserve (kWh)</label><input type="number" id="bat-min" value="20" min="0" step="any" /></div>
+          <div class="field"><label>Max Charge/h</label><input type="number" id="bat-maxc" value="50" min="0" step="any" /></div>
+          <div class="field" style="grid-column:span 2"><label>Max Discharge/h</label><input type="number" id="bat-maxd" value="50" min="0" step="any" /></div>
         </div>
       </div>
     </div>
 
-    <!-- 24h Data -->
+    <!-- 24-Hour Data -->
     <div class="card">
       <div class="section-head">
-        <div class="card-title" style="margin:0">24-Hour Energy Data</div>
-        <button class="btn-collapse" id="hours-toggle" data-target="hours-body">
-          expand <span class="chevron">▾</span>
-        </button>
+        <div class="card-title" style="margin:0">24-Hour Forecast</div>
+        <button class="btn-collapse open" data-target="hours-body">collapse <span class="chevron">▾</span></button>
       </div>
-      <div style="font-size:0.78rem;color:var(--muted)">Default campus profile — expand to edit hour-by-hour.</div>
-      <div class="collapsible" id="hours-body" style="max-height:0">
-        <div style="margin-top:0.75rem;overflow-x:auto">
-          <table id="hours-table">
-            <thead><tr><th>Hour</th><th>Demand kWh</th><th>Solar kWh</th><th>Tariff ৳/kWh</th></tr></thead>
+      <div class="collapsible" id="hours-body">
+        <div class="hours-table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Hour</th>
+                <th>Demand (kWh)</th>
+                <th>Solar (kWh)</th>
+                <th>Tariff (BDT/kWh)</th>
+              </tr>
+            </thead>
             <tbody id="hours-tbody"></tbody>
           </table>
         </div>
       </div>
     </div>
 
-    <!-- Error -->
-    <div id="error-toast"></div>
-
-    <!-- Progress -->
-    <div id="progress-steps">
-      <ul class="step-list">
-        <li class="step" id="step-1"><span class="step-icon" id="s1-icon">○</span> Sending request to API…</li>
-        <li class="step" id="step-2"><span class="step-icon" id="s2-icon">○</span> LLM interpreting operator notes…</li>
-        <li class="step" id="step-3"><span class="step-icon" id="s3-icon">○</span> Guardrail validation…</li>
-        <li class="step" id="step-4"><span class="step-icon" id="s4-icon">○</span> MILP optimizer solving 24-hour plan…</li>
-        <li class="step" id="step-5"><span class="step-icon" id="s5-icon">○</span> Replay validation &amp; computing totals…</li>
-      </ul>
+    <!-- Optimize button -->
+    <div style="display:flex;flex-direction:column;gap:0.75rem;">
+      <div id="error-toast"></div>
+      <button id="btn-optimize">
+        <div class="btn-inner" id="btn-inner">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          Optimize 24-Hour Plan
+        </div>
+      </button>
+      <div id="progress-steps">
+        <ul class="step-list">
+          <li class="step" id="step-1"><span class="step-icon" id="s1-icon">○</span> Parsing operator notes</li>
+          <li class="step" id="step-2"><span class="step-icon" id="s2-icon">○</span> Gemini 2.5 Flash interpreting directives</li>
+          <li class="step" id="step-3"><span class="step-icon" id="s3-icon">○</span> Guardrail validation</li>
+          <li class="step" id="step-4"><span class="step-icon" id="s4-icon">○</span> MILP optimizer solving 24-hour schedule</li>
+          <li class="step" id="step-5"><span class="step-icon" id="s5-icon">○</span> Replay validation &amp; final totals</li>
+        </ul>
+      </div>
     </div>
 
-    <!-- Optimize -->
-    <button id="btn-optimize">
-      <div class="btn-inner" id="btn-inner">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-        </svg>
-        Optimize 24-Hour Plan
-      </div>
-    </button>
+  </div><!-- /LEFT PANEL -->
 
-  </div><!-- /left panel -->
-
-  <!-- ════ RIGHT PANEL ════ -->
+  <!-- RIGHT PANEL -->
   <div class="right-panel">
 
+    <!-- History strip -->
+    <div id="history-strip">
+      <div class="history-label">Recent Optimizations</div>
+    </div>
+
     <!-- Empty state -->
-    <div id="empty-state" class="card">
+    <div class="card" id="empty-state">
       <div class="empty-icon">
-        <svg width="36" height="36" viewBox="0 0 24 24" fill="none">
-          <path d="M13 2L3 14h8l-2 8 12-12h-8l2-8z" fill="url(#lg2)" />
-          <defs>
-            <linearGradient id="lg2" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#00d4b8"/>
-              <stop offset="100%" stop-color="#4f8ef7"/>
-            </linearGradient>
-          </defs>
-        </svg>
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#00d4b8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
       </div>
       <h3>Ready to Optimize</h3>
-      <p>Enter operator notes describing today's conditions, configure the battery, then click <strong>Optimize</strong> to generate a cost-minimized 24-hour energy schedule.</p>
+      <p>Select a preset or enter your scenario details on the left, then click Optimize.</p>
     </div>
 
     <!-- Results -->
     <div id="results">
 
-      <!-- Metrics row -->
-      <div class="metrics-row fade-up">
-        <div class="metric-card cost">
-          <div class="metric-label">Optimized Cost</div>
-          <div class="metric-value" id="m-cost">—<span class="metric-unit">BDT</span></div>
-          <div class="metric-sub" id="m-cost-sub"></div>
-        </div>
-        <div class="metric-card saving">
-          <div class="metric-label">💰 Savings vs Baseline</div>
-          <div class="metric-value" id="m-saving">—<span class="metric-unit">BDT</span></div>
-          <div class="metric-sub" id="m-saving-pct"></div>
-        </div>
-        <div class="metric-card grid">
-          <div class="metric-label">Total Grid Draw</div>
-          <div class="metric-value" id="m-grid">—<span class="metric-unit">kWh</span></div>
-          <div class="metric-sub" id="m-grid-sub"></div>
-        </div>
-        <div class="metric-card peak">
-          <div class="metric-label">Peak Grid Hour</div>
-          <div class="metric-value" id="m-peak">—<span class="metric-unit">kWh</span></div>
-          <div class="metric-sub" id="m-peak-sub"></div>
-        </div>
-      </div>
-
-      <!-- Plan summary -->
-      <div class="card fade-up">
-        <div class="card-title">Plan Summary</div>
+      <!-- Plan Summary -->
+      <div class="card" id="plan-summary-card">
+        <div class="sum-lbl">📋 Plan Summary</div>
         <div id="plan-summary-text">—</div>
       </div>
 
-      <!-- Directives -->
-      <div class="card fade-up">
-        <div class="card-title">Directive Interpretation <span style="color:var(--muted);text-transform:none;font-weight:400;letter-spacing:0"> — powered by Gemini 2.5 Flash</span></div>
-        <div class="directive-list" id="directive-list"></div>
+      <!-- Metrics -->
+      <div class="metrics-row">
+        <div class="metric-card cost">
+          <div class="metric-label">Optimized Cost</div>
+          <div class="metric-value" id="m-cost">—</div>
+          <div class="metric-sub" id="m-cost-sub">24-hour grid cost</div>
+        </div>
+        <div class="metric-card saving">
+          <div class="metric-label">Savings vs Baseline</div>
+          <div class="metric-value" id="m-saving">—</div>
+          <div class="metric-sub" id="m-saving-pct">vs no-battery plan</div>
+        </div>
+        <div class="metric-card grid">
+          <div class="metric-label">Total Grid Draw</div>
+          <div class="metric-value" id="m-grid">—</div>
+          <div class="metric-sub" id="m-grid-sub">24-hour grid consumption</div>
+        </div>
+        <div class="metric-card peak">
+          <div class="metric-label">Peak Grid Hour</div>
+          <div class="metric-value" id="m-peak">—</div>
+          <div class="metric-sub" id="m-peak-sub">highest single-hour draw</div>
+        </div>
       </div>
 
-      <!-- Charts row -->
+      <!-- Charts -->
       <div class="charts-row">
-        <div class="card fade-up">
-          <div class="card-title">24-Hour Energy Schedule</div>
-          <div class="chart-wrapper"><canvas id="energy-chart"></canvas></div>
+        <div class="card">
+          <div class="card-title">Energy Source Mix — 24h</div>
+          <div class="chart-wrapper">
+            <canvas id="energy-chart"></canvas>
+          </div>
         </div>
-        <div class="card fade-up">
-          <div class="card-title">Energy Source Mix</div>
+        <div class="card">
+          <div class="card-title">Source Breakdown</div>
           <div class="donut-wrapper">
             <div class="donut-inner">
               <canvas id="donut-chart"></canvas>
               <div class="donut-center">
                 <div class="donut-pct" id="donut-pct">—</div>
-                <div class="donut-lbl">Solar %</div>
+                <div class="donut-lbl">Solar</div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Hourly plan table -->
-      <div class="card fade-up">
-        <div class="card-actions">
-          <div class="card-title" style="margin:0">Hourly Plan Detail</div>
-          <button class="btn-csv" id="btn-csv">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      <!-- Directives -->
+      <div class="card">
+        <div class="card-title">Directive Interpretation (Gemini 2.5 Flash)</div>
+        <div class="directive-list" id="directive-list"></div>
+      </div>
+
+      <!-- Hourly Plan -->
+      <div class="card">
+        <div class="section-head">
+          <div class="card-title" style="margin:0">Hourly Dispatch Plan</div>
+          <button id="btn-csv">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             Export CSV
           </button>
         </div>
-        <div class="table-scroll">
+        <div class="plan-table-wrap" style="max-height:360px;overflow-y:auto">
           <table>
             <thead>
               <tr>
-                <th>Hour</th><th>Demand kWh</th><th>Solar kWh</th>
-                <th>Grid kWh</th><th>Solar Used kWh</th>
-                <th>Action</th><th>Bat kWh</th><th>Bat After kWh</th>
-                <th>Cost ৳</th>
+                <th>Hour</th><th>Demand</th><th>Solar</th>
+                <th>Grid</th><th>Solar Used</th>
+                <th>Action</th><th>Bat. kWh</th>
+                <th>Bat. After</th><th>Cost</th>
               </tr>
             </thead>
             <tbody id="plan-tbody"></tbody>
@@ -685,199 +823,268 @@
       </div>
 
     </div><!-- /results -->
-  </div><!-- /right panel -->
 
-</main>
+  </div><!-- /RIGHT PANEL -->
+
+</div><!-- /main-grid -->
 
 <footer>
-  GridPilot AI &nbsp;·&nbsp; BUP CSE Fest 2026 Hackathon &nbsp;·&nbsp;
-  LLM: <strong>Gemini 2.5 Flash</strong> &nbsp;·&nbsp; Optimizer: <strong>PuLP / CBC MILP</strong>
+  GridPilot AI · <a href="https://github.com/Fardinfn74/gridpilot" target="_blank">GitHub</a> ·
+  <a href="/docs" target="_blank">API Docs</a> ·
+  <a href="/info" target="_blank">/info</a> ·
+  BUP CSE Fest 2026 · GridWise LLM Challenge
 </footer>
+</div><!-- /page -->
 
 <script>
-// ── Default 24-hour campus profile ───────────────────────────────────────────
-const DEFAULT_HOURS = [
-  {hour:0,  demand_kwh:90,  solar_kwh:0,   tariff_bdt_per_kwh:6.00},
-  {hour:1,  demand_kwh:82,  solar_kwh:0,   tariff_bdt_per_kwh:6.00},
-  {hour:2,  demand_kwh:75,  solar_kwh:0,   tariff_bdt_per_kwh:6.00},
-  {hour:3,  demand_kwh:70,  solar_kwh:0,   tariff_bdt_per_kwh:6.00},
-  {hour:4,  demand_kwh:68,  solar_kwh:0,   tariff_bdt_per_kwh:6.00},
-  {hour:5,  demand_kwh:72,  solar_kwh:0,   tariff_bdt_per_kwh:6.00},
-  {hour:6,  demand_kwh:85,  solar_kwh:8,   tariff_bdt_per_kwh:7.00},
-  {hour:7,  demand_kwh:105, solar_kwh:25,  tariff_bdt_per_kwh:7.00},
-  {hour:8,  demand_kwh:118, solar_kwh:55,  tariff_bdt_per_kwh:8.00},
-  {hour:9,  demand_kwh:120, solar_kwh:80,  tariff_bdt_per_kwh:8.00},
-  {hour:10, demand_kwh:115, solar_kwh:95,  tariff_bdt_per_kwh:9.00},
-  {hour:11, demand_kwh:112, solar_kwh:105, tariff_bdt_per_kwh:9.00},
-  {hour:12, demand_kwh:118, solar_kwh:110, tariff_bdt_per_kwh:10.00},
-  {hour:13, demand_kwh:120, solar_kwh:100, tariff_bdt_per_kwh:10.00},
-  {hour:14, demand_kwh:115, solar_kwh:85,  tariff_bdt_per_kwh:10.00},
-  {hour:15, demand_kwh:110, solar_kwh:65,  tariff_bdt_per_kwh:9.00},
-  {hour:16, demand_kwh:108, solar_kwh:40,  tariff_bdt_per_kwh:9.00},
-  {hour:17, demand_kwh:115, solar_kwh:18,  tariff_bdt_per_kwh:9.00},
-  {hour:18, demand_kwh:125, solar_kwh:4,   tariff_bdt_per_kwh:11.00},
-  {hour:19, demand_kwh:130, solar_kwh:0,   tariff_bdt_per_kwh:11.00},
-  {hour:20, demand_kwh:120, solar_kwh:0,   tariff_bdt_per_kwh:10.00},
-  {hour:21, demand_kwh:105, solar_kwh:0,   tariff_bdt_per_kwh:9.00},
-  {hour:22, demand_kwh:95,  solar_kwh:0,   tariff_bdt_per_kwh:7.00},
-  {hour:23, demand_kwh:88,  solar_kwh:0,   tariff_bdt_per_kwh:6.00},
-];
-
-// Official SAMPLE-01 — also includes 24h data from the official test pack
-const SAMPLE_01 = {
-  scenario_id: "SAMPLE-01",
-  operator_notes: [
-    "Facilities will wash the rooftop solar panels from noon until 2 PM. During cleaning, usable solar should be treated as roughly 25% of the forecast.",
-    "The sports office moved next month's registration deadline."
-  ],
-  battery: { capacity_kwh:200, initial_energy_kwh:100, minimum_energy_kwh:20, max_charge_kwh_per_hour:50, max_discharge_kwh_per_hour:50 },
-  hours: [
-    {hour:0,  demand_kwh:110,solar_kwh:0,  tariff_bdt_per_kwh:6.00},
-    {hour:1,  demand_kwh:100,solar_kwh:0,  tariff_bdt_per_kwh:6.00},
-    {hour:2,  demand_kwh:95, solar_kwh:0,  tariff_bdt_per_kwh:6.00},
-    {hour:3,  demand_kwh:90, solar_kwh:0,  tariff_bdt_per_kwh:6.00},
-    {hour:4,  demand_kwh:88, solar_kwh:0,  tariff_bdt_per_kwh:6.00},
-    {hour:5,  demand_kwh:92, solar_kwh:0,  tariff_bdt_per_kwh:6.00},
-    {hour:6,  demand_kwh:105,solar_kwh:10, tariff_bdt_per_kwh:7.00},
-    {hour:7,  demand_kwh:125,solar_kwh:30, tariff_bdt_per_kwh:7.00},
-    {hour:8,  demand_kwh:145,solar_kwh:70, tariff_bdt_per_kwh:8.00},
-    {hour:9,  demand_kwh:155,solar_kwh:100,tariff_bdt_per_kwh:8.00},
-    {hour:10, demand_kwh:150,solar_kwh:120,tariff_bdt_per_kwh:9.00},
-    {hour:11, demand_kwh:148,solar_kwh:135,tariff_bdt_per_kwh:9.00},
-    {hour:12, demand_kwh:155,solar_kwh:140,tariff_bdt_per_kwh:10.00},
-    {hour:13, demand_kwh:158,solar_kwh:130,tariff_bdt_per_kwh:10.00},
-    {hour:14, demand_kwh:150,solar_kwh:110,tariff_bdt_per_kwh:10.00},
-    {hour:15, demand_kwh:142,solar_kwh:80, tariff_bdt_per_kwh:9.00},
-    {hour:16, demand_kwh:138,solar_kwh:50, tariff_bdt_per_kwh:9.00},
-    {hour:17, demand_kwh:145,solar_kwh:20, tariff_bdt_per_kwh:9.00},
-    {hour:18, demand_kwh:160,solar_kwh:5,  tariff_bdt_per_kwh:11.00},
-    {hour:19, demand_kwh:165,solar_kwh:0,  tariff_bdt_per_kwh:11.00},
-    {hour:20, demand_kwh:150,solar_kwh:0,  tariff_bdt_per_kwh:10.00},
-    {hour:21, demand_kwh:135,solar_kwh:0,  tariff_bdt_per_kwh:9.00},
-    {hour:22, demand_kwh:120,solar_kwh:0,  tariff_bdt_per_kwh:7.00},
-    {hour:23, demand_kwh:112,solar_kwh:0,  tariff_bdt_per_kwh:6.00},
-  ]
+// ════════════════════════════════════════════════════════════════════════════
+// DATA — Preset scenarios
+// ════════════════════════════════════════════════════════════════════════════
+const PRESETS = {
+  default: {
+    scenario_id: 'DEMO-001',
+    operator_notes: [
+      'Rooftop solar panels will be cleaned from noon to 2 PM — expect only 25% output during that window.',
+      'The sports complex will host an evening event from 7 PM to 10 PM — ensure battery reserve stays above 80 kWh.'
+    ],
+    battery: { capacity_kwh:200, initial_energy_kwh:100, minimum_energy_kwh:20, max_charge_kwh_per_hour:50, max_discharge_kwh_per_hour:50 },
+    hours: [
+      {hour:0,  demand_kwh:90,  solar_kwh:0,   tariff_bdt_per_kwh:6.00},
+      {hour:1,  demand_kwh:82,  solar_kwh:0,   tariff_bdt_per_kwh:6.00},
+      {hour:2,  demand_kwh:75,  solar_kwh:0,   tariff_bdt_per_kwh:6.00},
+      {hour:3,  demand_kwh:70,  solar_kwh:0,   tariff_bdt_per_kwh:6.00},
+      {hour:4,  demand_kwh:68,  solar_kwh:0,   tariff_bdt_per_kwh:6.00},
+      {hour:5,  demand_kwh:72,  solar_kwh:0,   tariff_bdt_per_kwh:6.00},
+      {hour:6,  demand_kwh:85,  solar_kwh:8,   tariff_bdt_per_kwh:7.00},
+      {hour:7,  demand_kwh:105, solar_kwh:25,  tariff_bdt_per_kwh:7.00},
+      {hour:8,  demand_kwh:118, solar_kwh:55,  tariff_bdt_per_kwh:8.00},
+      {hour:9,  demand_kwh:120, solar_kwh:80,  tariff_bdt_per_kwh:8.00},
+      {hour:10, demand_kwh:115, solar_kwh:95,  tariff_bdt_per_kwh:9.00},
+      {hour:11, demand_kwh:112, solar_kwh:105, tariff_bdt_per_kwh:9.00},
+      {hour:12, demand_kwh:118, solar_kwh:110, tariff_bdt_per_kwh:10.00},
+      {hour:13, demand_kwh:120, solar_kwh:100, tariff_bdt_per_kwh:10.00},
+      {hour:14, demand_kwh:115, solar_kwh:85,  tariff_bdt_per_kwh:10.00},
+      {hour:15, demand_kwh:110, solar_kwh:65,  tariff_bdt_per_kwh:9.00},
+      {hour:16, demand_kwh:108, solar_kwh:40,  tariff_bdt_per_kwh:9.00},
+      {hour:17, demand_kwh:115, solar_kwh:18,  tariff_bdt_per_kwh:9.00},
+      {hour:18, demand_kwh:125, solar_kwh:4,   tariff_bdt_per_kwh:11.00},
+      {hour:19, demand_kwh:130, solar_kwh:0,   tariff_bdt_per_kwh:11.00},
+      {hour:20, demand_kwh:120, solar_kwh:0,   tariff_bdt_per_kwh:10.00},
+      {hour:21, demand_kwh:105, solar_kwh:0,   tariff_bdt_per_kwh:9.00},
+      {hour:22, demand_kwh:95,  solar_kwh:0,   tariff_bdt_per_kwh:7.00},
+      {hour:23, demand_kwh:88,  solar_kwh:0,   tariff_bdt_per_kwh:6.00},
+    ]
+  },
+  sample01: {
+    scenario_id: 'SAMPLE-01',
+    operator_notes: [
+      'Facilities will wash the rooftop solar panels from noon until 2 PM. During cleaning, usable solar should be treated as roughly 25% of the forecast.',
+      'The sports office moved next month\'s registration deadline.'
+    ],
+    battery: { capacity_kwh:200, initial_energy_kwh:100, minimum_energy_kwh:20, max_charge_kwh_per_hour:50, max_discharge_kwh_per_hour:50 },
+    hours: [
+      {hour:0,  demand_kwh:110,solar_kwh:0,  tariff_bdt_per_kwh:6.00},
+      {hour:1,  demand_kwh:100,solar_kwh:0,  tariff_bdt_per_kwh:6.00},
+      {hour:2,  demand_kwh:95, solar_kwh:0,  tariff_bdt_per_kwh:6.00},
+      {hour:3,  demand_kwh:90, solar_kwh:0,  tariff_bdt_per_kwh:6.00},
+      {hour:4,  demand_kwh:88, solar_kwh:0,  tariff_bdt_per_kwh:6.00},
+      {hour:5,  demand_kwh:92, solar_kwh:0,  tariff_bdt_per_kwh:6.00},
+      {hour:6,  demand_kwh:105,solar_kwh:10, tariff_bdt_per_kwh:7.00},
+      {hour:7,  demand_kwh:125,solar_kwh:30, tariff_bdt_per_kwh:7.00},
+      {hour:8,  demand_kwh:145,solar_kwh:70, tariff_bdt_per_kwh:8.00},
+      {hour:9,  demand_kwh:155,solar_kwh:100,tariff_bdt_per_kwh:8.00},
+      {hour:10, demand_kwh:150,solar_kwh:120,tariff_bdt_per_kwh:9.00},
+      {hour:11, demand_kwh:148,solar_kwh:135,tariff_bdt_per_kwh:9.00},
+      {hour:12, demand_kwh:155,solar_kwh:140,tariff_bdt_per_kwh:10.00},
+      {hour:13, demand_kwh:158,solar_kwh:130,tariff_bdt_per_kwh:10.00},
+      {hour:14, demand_kwh:150,solar_kwh:110,tariff_bdt_per_kwh:10.00},
+      {hour:15, demand_kwh:142,solar_kwh:80, tariff_bdt_per_kwh:9.00},
+      {hour:16, demand_kwh:138,solar_kwh:50, tariff_bdt_per_kwh:9.00},
+      {hour:17, demand_kwh:145,solar_kwh:20, tariff_bdt_per_kwh:9.00},
+      {hour:18, demand_kwh:160,solar_kwh:5,  tariff_bdt_per_kwh:11.00},
+      {hour:19, demand_kwh:165,solar_kwh:0,  tariff_bdt_per_kwh:11.00},
+      {hour:20, demand_kwh:150,solar_kwh:0,  tariff_bdt_per_kwh:10.00},
+      {hour:21, demand_kwh:135,solar_kwh:0,  tariff_bdt_per_kwh:9.00},
+      {hour:22, demand_kwh:120,solar_kwh:0,  tariff_bdt_per_kwh:7.00},
+      {hour:23, demand_kwh:112,solar_kwh:0,  tariff_bdt_per_kwh:6.00},
+    ]
+  },
+  heatwave: {
+    scenario_id: 'HEATWAVE-DEMO',
+    operator_notes: [
+      'Extreme heat today — HVAC load will spike 40% above forecast from 2 PM to 8 PM. Grid constraint applies.',
+      'Do not discharge the battery before 5 PM — reserve it for the evening peak.',
+      'Generator test scheduled from 10 AM to 11 AM — treat grid as unavailable that hour.'
+    ],
+    battery: { capacity_kwh:300, initial_energy_kwh:150, minimum_energy_kwh:30, max_charge_kwh_per_hour:70, max_discharge_kwh_per_hour:70 },
+    hours: [
+      {hour:0,  demand_kwh:100,solar_kwh:0,   tariff_bdt_per_kwh:5.00},
+      {hour:1,  demand_kwh:90, solar_kwh:0,   tariff_bdt_per_kwh:5.00},
+      {hour:2,  demand_kwh:85, solar_kwh:0,   tariff_bdt_per_kwh:5.00},
+      {hour:3,  demand_kwh:80, solar_kwh:0,   tariff_bdt_per_kwh:5.00},
+      {hour:4,  demand_kwh:78, solar_kwh:0,   tariff_bdt_per_kwh:5.00},
+      {hour:5,  demand_kwh:82, solar_kwh:0,   tariff_bdt_per_kwh:5.50},
+      {hour:6,  demand_kwh:95, solar_kwh:12,  tariff_bdt_per_kwh:6.00},
+      {hour:7,  demand_kwh:115,solar_kwh:35,  tariff_bdt_per_kwh:7.00},
+      {hour:8,  demand_kwh:135,solar_kwh:75,  tariff_bdt_per_kwh:8.00},
+      {hour:9,  demand_kwh:145,solar_kwh:105, tariff_bdt_per_kwh:8.50},
+      {hour:10, demand_kwh:150,solar_kwh:120, tariff_bdt_per_kwh:9.00},
+      {hour:11, demand_kwh:148,solar_kwh:130, tariff_bdt_per_kwh:9.00},
+      {hour:12, demand_kwh:155,solar_kwh:135, tariff_bdt_per_kwh:9.50},
+      {hour:13, demand_kwh:160,solar_kwh:125, tariff_bdt_per_kwh:10.00},
+      {hour:14, demand_kwh:185,solar_kwh:110, tariff_bdt_per_kwh:11.00},
+      {hour:15, demand_kwh:195,solar_kwh:90,  tariff_bdt_per_kwh:12.00},
+      {hour:16, demand_kwh:200,solar_kwh:65,  tariff_bdt_per_kwh:12.50},
+      {hour:17, demand_kwh:198,solar_kwh:35,  tariff_bdt_per_kwh:12.00},
+      {hour:18, demand_kwh:195,solar_kwh:10,  tariff_bdt_per_kwh:13.00},
+      {hour:19, demand_kwh:185,solar_kwh:0,   tariff_bdt_per_kwh:13.00},
+      {hour:20, demand_kwh:170,solar_kwh:0,   tariff_bdt_per_kwh:11.00},
+      {hour:21, demand_kwh:150,solar_kwh:0,   tariff_bdt_per_kwh:10.00},
+      {hour:22, demand_kwh:130,solar_kwh:0,   tariff_bdt_per_kwh:8.00},
+      {hour:23, demand_kwh:110,solar_kwh:0,   tariff_bdt_per_kwh:6.00},
+    ]
+  }
 };
 
-// Current active hours (starts as DEFAULT, may be replaced by Load Sample)
-let activeHours = DEFAULT_HOURS.map(h => ({...h}));
+// ════════════════════════════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════════════════════════════
+let activeHours = PRESETS.default.hours.map(h => ({...h}));
+let lastPlanData = null;
+let barChart = null, donutChart = null;
+let stepTimers = [];
+const MAX_HISTORY = 5;
 
-// ── Collapsibles ──────────────────────────────────────────────────────────────
-document.querySelectorAll('.btn-collapse').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const body = document.getElementById(btn.dataset.target);
-    if (!body) return;
-    const isOpen = btn.classList.contains('open');
-    if (isOpen) {
-      body.style.maxHeight = '0';
-      btn.innerHTML = 'expand <span class="chevron">▾</span>';
-      btn.classList.remove('open');
-    } else {
-      body.style.maxHeight = body.scrollHeight + 600 + 'px';
-      btn.innerHTML = 'collapse <span class="chevron">▾</span>';
-      btn.classList.add('open');
-    }
-  });
-});
+// ════════════════════════════════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════════════════════════════════
+buildHoursTable(PRESETS.default.hours);
+addNote(PRESETS.default.operator_notes[0]);
+addNote(PRESETS.default.operator_notes[1]);
+initCollapsibles();
+loadHistoryUI();
+healthAndInfo();
 
-// ── Notes ─────────────────────────────────────────────────────────────────────
-const notesContainer = document.getElementById('notes-container');
+// ════════════════════════════════════════════════════════════════════════════
+// PRESET LOADER
+// ════════════════════════════════════════════════════════════════════════════
+function loadPreset(key) {
+  const p = PRESETS[key];
+  if (!p) return;
+
+  // Update active button
+  document.querySelectorAll('.btn-preset').forEach(b => b.classList.remove('active'));
+  const btn = document.getElementById('preset-' + key);
+  if (btn) btn.classList.add('active');
+
+  document.getElementById('scenario-id').value = p.scenario_id;
+
+  // Notes
+  const nc = document.getElementById('notes-container');
+  nc.innerHTML = '';
+  p.operator_notes.forEach(n => addNote(n));
+
+  // Battery
+  document.getElementById('bat-cap').value  = p.battery.capacity_kwh;
+  document.getElementById('bat-init').value = p.battery.initial_energy_kwh;
+  document.getElementById('bat-min').value  = p.battery.minimum_energy_kwh;
+  document.getElementById('bat-maxc').value = p.battery.max_charge_kwh_per_hour;
+  document.getElementById('bat-maxd').value = p.battery.max_discharge_kwh_per_hour;
+
+  // Hours
+  activeHours = p.hours.map(h => ({...h}));
+  buildHoursTable(activeHours);
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// NOTES
+// ════════════════════════════════════════════════════════════════════════════
 const btnAddNote = document.getElementById('btn-add-note');
 
 function addNote(val = '') {
-  if (notesContainer.children.length >= 3) return;
-  const idx = notesContainer.children.length;
+  const nc = document.getElementById('notes-container');
+  if (nc.children.length >= 3) return;
+  const idx = nc.children.length;
   const div = document.createElement('div');
   div.className = 'note-row';
-  // Escape val to avoid XSS via textarea insertion
+  const num = document.createElement('div'); num.className = 'note-num'; num.textContent = idx + 1;
   const ta = document.createElement('textarea');
-  ta.className = 'note-input';
-  ta.placeholder = 'e.g. Rooftop panels will be cleaned from noon to 2 PM, cutting solar to ~25%…';
-  ta.rows = 3;
+  ta.className = 'note-input'; ta.rows = 3;
+  ta.placeholder = 'e.g. Solar panels will be cleaned noon–2 PM, cutting output to 25%…';
   ta.value = val;
-  const num = document.createElement('div');
-  num.className = 'note-num';
-  num.textContent = idx + 1;
-  const del = document.createElement('button');
-  del.className = 'btn-del-note';
-  del.title = 'Remove';
-  del.textContent = '✕';
+  const del = document.createElement('button'); del.className = 'btn-del-note'; del.title = 'Remove'; del.textContent = '✕';
   del.addEventListener('click', () => {
-    if (notesContainer.children.length <= 1) return;
-    div.remove();
-    renumber();
+    const nc2 = document.getElementById('notes-container');
+    if (nc2.children.length <= 1) return;
+    div.remove(); renumber();
   });
-  div.appendChild(num);
-  div.appendChild(ta);
-  div.appendChild(del);
-  notesContainer.appendChild(div);
-  renumber();
+  div.appendChild(num); div.appendChild(ta); div.appendChild(del);
+  nc.appendChild(div); renumber();
 }
 
 function renumber() {
-  [...notesContainer.querySelectorAll('.note-num')].forEach((n, i) => n.textContent = i + 1);
-  btnAddNote.style.display = notesContainer.children.length >= 3 ? 'none' : '';
+  const nc = document.getElementById('notes-container');
+  [...nc.querySelectorAll('.note-num')].forEach((n, i) => n.textContent = i + 1);
+  btnAddNote.style.display = nc.children.length >= 3 ? 'none' : '';
 }
-
-addNote(''); addNote('');
 btnAddNote.addEventListener('click', () => addNote(''));
 
-// ── Hours table ───────────────────────────────────────────────────────────────
-const hoursTbody = document.getElementById('hours-tbody');
-
+// ════════════════════════════════════════════════════════════════════════════
+// HOURS TABLE
+// ════════════════════════════════════════════════════════════════════════════
 function buildHoursTable(hours) {
-  hoursTbody.innerHTML = '';
+  const tbody = document.getElementById('hours-tbody');
+  tbody.innerHTML = '';
   hours.forEach(h => {
     const tr = document.createElement('tr');
-    const s = `background:transparent;border:none;color:inherit;font-family:'JetBrains Mono',monospace;font-size:0.78rem;outline:none;width:`;
+    const s = `background:transparent;border:none;color:inherit;font-family:'JetBrains Mono',monospace;font-size:0.77rem;outline:none;width:`;
     tr.innerHTML = `<td>${String(h.hour).padStart(2,'0')}:00</td>
       <td><input type="number" id="dem-${h.hour}" value="${h.demand_kwh}" step="any" min="0" style="${s}75px;color:var(--text)"></td>
       <td><input type="number" id="sol-${h.hour}" value="${h.solar_kwh}" step="any" min="0" style="${s}65px;color:var(--teal)"></td>
       <td><input type="number" id="tar-${h.hour}" value="${h.tariff_bdt_per_kwh}" step="any" min="0" style="${s}55px;color:var(--yellow)"></td>`;
-    hoursTbody.appendChild(tr);
+    tbody.appendChild(tr);
   });
 }
 
-buildHoursTable(DEFAULT_HOURS);
+// ════════════════════════════════════════════════════════════════════════════
+// COLLAPSIBLES
+// ════════════════════════════════════════════════════════════════════════════
+function initCollapsibles() {
+  document.querySelectorAll('.btn-collapse').forEach(btn => {
+    const body = document.getElementById(btn.dataset.target);
+    if (!body) return;
+    body.style.maxHeight = body.scrollHeight + 800 + 'px';
+    btn.addEventListener('click', () => {
+      const isOpen = btn.classList.contains('open');
+      if (isOpen) {
+        body.style.maxHeight = '0';
+        btn.innerHTML = 'expand <span class="chevron">▾</span>';
+        btn.classList.remove('open');
+      } else {
+        body.style.maxHeight = body.scrollHeight + 800 + 'px';
+        btn.innerHTML = 'collapse <span class="chevron">▾</span>';
+        btn.classList.add('open');
+      }
+    });
+  });
+}
 
-// ── Load Sample ───────────────────────────────────────────────────────────────
-document.getElementById('btn-load-sample').addEventListener('click', () => {
-  document.getElementById('scenario-id').value = SAMPLE_01.scenario_id;
-
-  // Reset notes
-  notesContainer.innerHTML = '';
-  SAMPLE_01.operator_notes.forEach(n => addNote(n));
-
-  // Battery
-  document.getElementById('bat-cap').value  = SAMPLE_01.battery.capacity_kwh;
-  document.getElementById('bat-init').value = SAMPLE_01.battery.initial_energy_kwh;
-  document.getElementById('bat-min').value  = SAMPLE_01.battery.minimum_energy_kwh;
-  document.getElementById('bat-maxc').value = SAMPLE_01.battery.max_charge_kwh_per_hour;
-  document.getElementById('bat-maxd').value = SAMPLE_01.battery.max_discharge_kwh_per_hour;
-
-  // FIX: inject SAMPLE-01 hours into the input table AND activeHours
-  activeHours = SAMPLE_01.hours.map(h => ({...h}));
-  buildHoursTable(activeHours);
-});
-
-// ── Collect payload ───────────────────────────────────────────────────────────
+// ════════════════════════════════════════════════════════════════════════════
+// PAYLOAD
+// ════════════════════════════════════════════════════════════════════════════
 function getPayload() {
-  const notes = [...notesContainer.querySelectorAll('.note-input')]
-    .map(t => t.value.trim()).filter(Boolean);
+  const nc = document.getElementById('notes-container');
+  const notes = [...nc.querySelectorAll('.note-input')].map(t => t.value.trim()).filter(Boolean);
   if (!notes.length) throw new Error('Enter at least one operator note.');
-
-  // Read live values from table inputs
   const hours = activeHours.map(h => ({
     hour: h.hour,
     demand_kwh:         parseFloat(document.getElementById(`dem-${h.hour}`)?.value) || 0,
     solar_kwh:          parseFloat(document.getElementById(`sol-${h.hour}`)?.value) || 0,
     tariff_bdt_per_kwh: parseFloat(document.getElementById(`tar-${h.hour}`)?.value) || 0,
   }));
-
   return {
-    scenario_id:    document.getElementById('scenario-id').value.trim() || 'DEMO-001',
-    operator_notes: notes,
-    hours,
+    scenario_id: document.getElementById('scenario-id').value.trim() || 'DEMO-001',
+    operator_notes: notes, hours,
     battery: {
       capacity_kwh:               parseFloat(document.getElementById('bat-cap').value)  || 0,
       initial_energy_kwh:         parseFloat(document.getElementById('bat-init').value) || 0,
@@ -888,149 +1095,177 @@ function getPayload() {
   };
 }
 
-// ── Charts ────────────────────────────────────────────────────────────────────
-let barChart = null, donutChart = null;
+// ════════════════════════════════════════════════════════════════════════════
+// ANIMATED COUNTER
+// ════════════════════════════════════════════════════════════════════════════
+function animateCounter(el, targetVal, isMoney, suffix = '') {
+  const duration = 900;
+  const start = performance.now();
+  const from = 0;
+  const to = targetVal;
+  function tick(now) {
+    const t = Math.min((now - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - t, 3); // cubic ease-out
+    const cur = from + (to - from) * ease;
+    el.innerHTML = isMoney
+      ? `${cur.toLocaleString('en-BD', {maximumFractionDigits: 0})}${suffix}`
+      : `${cur.toFixed(1)}${suffix}`;
+    if (t < 1) requestAnimationFrame(tick);
+    else el.innerHTML = isMoney
+      ? `${to.toLocaleString('en-BD', {maximumFractionDigits: 0})}${suffix}`
+      : `${to.toFixed(1)}${suffix}`;
+  }
+  requestAnimationFrame(tick);
+}
 
+// ════════════════════════════════════════════════════════════════════════════
+// TYPING EFFECT FOR SUMMARY
+// ════════════════════════════════════════════════════════════════════════════
+function typeText(el, text, speed = 18) {
+  el.textContent = '';
+  let i = 0;
+  const timer = setInterval(() => {
+    if (i >= text.length) { clearInterval(timer); return; }
+    el.textContent += text[i++];
+  }, speed);
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// CHARTS
+// ════════════════════════════════════════════════════════════════════════════
 function renderBarChart(hp) {
-  const labels      = hp.map(e => `${String(e.hour).padStart(2,'0')}:00`);
-  const gridD       = hp.map(e => e.grid_kwh);
-  const solarD      = hp.map(e => e.solar_used_kwh);
-  const dischargeD  = hp.map(e => e.battery_action === 'discharge' ? e.battery_kwh : 0);
-  const chargeD     = hp.map(e => e.battery_action === 'charge'    ? e.battery_kwh : 0);
-
   if (barChart) { barChart.destroy(); barChart = null; }
-
-  const ctx = document.getElementById('energy-chart');
-  if (!ctx) return;
+  const ctx = document.getElementById('energy-chart'); if (!ctx) return;
   barChart = new Chart(ctx.getContext('2d'), {
     type: 'bar',
-    data: { labels, datasets: [
-      { label:'Grid',      data:gridD,      backgroundColor:'rgba(248,113,113,0.75)', stack:'supply' },
-      { label:'Solar',     data:solarD,     backgroundColor:'rgba(251,191,36,0.75)',  stack:'supply' },
-      { label:'Discharge', data:dischargeD, backgroundColor:'rgba(52,211,153,0.75)', stack:'supply' },
-      { label:'Charge',    data:chargeD,    backgroundColor:'rgba(167,139,250,0.45)', stack:'charge' },
-    ]},
+    data: {
+      labels: hp.map(e => `${String(e.hour).padStart(2,'0')}:00`),
+      datasets: [
+        { label:'Grid',      data: hp.map(e => e.grid_kwh),                                              backgroundColor:'rgba(248,113,113,0.75)', stack:'s' },
+        { label:'Solar',     data: hp.map(e => e.solar_used_kwh),                                        backgroundColor:'rgba(251,191,36,0.75)',  stack:'s' },
+        { label:'Discharge', data: hp.map(e => e.battery_action==='discharge' ? e.battery_kwh : 0),      backgroundColor:'rgba(52,211,153,0.75)', stack:'s' },
+        { label:'Charge',    data: hp.map(e => e.battery_action==='charge'    ? e.battery_kwh : 0),      backgroundColor:'rgba(167,139,250,0.4)', stack:'c' },
+      ]
+    },
     options: {
       responsive: true, maintainAspectRatio: false,
       interaction: { mode:'index', intersect:false },
+      animation: { duration: 800, easing: 'easeOutQuart' },
       plugins: {
-        legend: { labels: { color:'#94a3b8', font:{size:11}, boxWidth:12 }},
+        legend: { labels: { color:'#94a3b8', font:{size:10}, boxWidth:10 } },
         tooltip: {
-          backgroundColor:'rgba(5,13,26,0.95)',
-          borderColor:'rgba(255,255,255,0.1)', borderWidth:1,
+          backgroundColor:'rgba(5,13,26,0.95)', borderColor:'rgba(255,255,255,0.1)', borderWidth:1,
           titleColor:'#e2e8f0', bodyColor:'#94a3b8',
           callbacks: { label: c => ` ${c.dataset.label}: ${c.parsed.y.toFixed(2)} kWh` }
         }
       },
       scales: {
-        x: { stacked:true, ticks:{color:'#475569',font:{size:9},maxRotation:45}, grid:{color:'rgba(255,255,255,0.03)'} },
-        y: { stacked:true, ticks:{color:'#475569',font:{size:10}}, grid:{color:'rgba(255,255,255,0.03)'},
-             title:{display:true, text:'kWh', color:'#475569', font:{size:11}} }
+        x: { stacked:true, ticks:{color:'#475569',font:{size:8},maxRotation:45}, grid:{color:'rgba(255,255,255,0.03)'} },
+        y: { stacked:true, ticks:{color:'#475569',font:{size:9}}, grid:{color:'rgba(255,255,255,0.03)'},
+             title:{display:true,text:'kWh',color:'#475569',font:{size:10}} }
       }
     }
   });
 }
 
 function renderDonut(hp) {
-  const totalSolar = hp.reduce((a, e) => a + e.solar_used_kwh, 0);
-  const totalGrid  = hp.reduce((a, e) => a + e.grid_kwh, 0);
-  const totalDisch = hp.reduce((a, e) => e.battery_action === 'discharge' ? a + e.battery_kwh : a, 0);
-  const total = (totalSolar + totalGrid + totalDisch) || 1;
-  const solarPct = Math.round(totalSolar / total * 100);
-
-  const pctEl = document.getElementById('donut-pct');
-  if (pctEl) pctEl.textContent = solarPct + '%';
-
   if (donutChart) { donutChart.destroy(); donutChart = null; }
-
-  const ctx = document.getElementById('donut-chart');
-  if (!ctx) return;
+  const totalSolar = hp.reduce((a,e)=>a+e.solar_used_kwh,0);
+  const totalGrid  = hp.reduce((a,e)=>a+e.grid_kwh,0);
+  const totalDisch = hp.reduce((a,e)=>e.battery_action==='discharge'?a+e.battery_kwh:a,0);
+  const total = (totalSolar+totalGrid+totalDisch)||1;
+  const pctEl = document.getElementById('donut-pct');
+  if (pctEl) pctEl.textContent = Math.round(totalSolar/total*100)+'%';
+  const ctx = document.getElementById('donut-chart'); if (!ctx) return;
   donutChart = new Chart(ctx.getContext('2d'), {
-    type: 'doughnut',
-    data: {
-      labels: ['Grid', 'Solar', 'Battery Discharge'],
-      datasets: [{ data: [totalGrid, totalSolar, totalDisch],
-        backgroundColor: ['rgba(248,113,113,0.8)','rgba(251,191,36,0.8)','rgba(52,211,153,0.8)'],
-        borderColor:     ['rgba(248,113,113,0.3)','rgba(251,191,36,0.3)','rgba(52,211,153,0.3)'],
-        borderWidth: 1, hoverOffset: 4 }]
+    type:'doughnut',
+    data:{
+      labels:['Grid','Solar','Battery Discharge'],
+      datasets:[{
+        data:[totalGrid,totalSolar,totalDisch],
+        backgroundColor:['rgba(248,113,113,0.8)','rgba(251,191,36,0.8)','rgba(52,211,153,0.8)'],
+        borderColor:['rgba(248,113,113,0.3)','rgba(251,191,36,0.3)','rgba(52,211,153,0.3)'],
+        borderWidth:1, hoverOffset:5
+      }]
     },
-    options: {
-      responsive:true, maintainAspectRatio:false,
-      cutout: '68%',
-      plugins: {
-        legend: { position:'bottom', labels:{ color:'#94a3b8', font:{size:11}, boxWidth:10, padding:12 }},
-        tooltip: {
-          backgroundColor:'rgba(5,13,26,0.95)', borderColor:'rgba(255,255,255,0.1)', borderWidth:1,
-          callbacks: { label: c => ` ${c.label}: ${c.parsed.toFixed(1)} kWh (${Math.round(c.parsed/total*100)}%)` }
+    options:{
+      responsive:true, maintainAspectRatio:false, cutout:'68%',
+      animation:{duration:900,easing:'easeOutQuart'},
+      plugins:{
+        legend:{position:'bottom',labels:{color:'#94a3b8',font:{size:10},boxWidth:10,padding:10}},
+        tooltip:{
+          backgroundColor:'rgba(5,13,26,0.95)',borderColor:'rgba(255,255,255,0.1)',borderWidth:1,
+          callbacks:{label:c=>` ${c.label}: ${c.parsed.toFixed(1)} kWh (${Math.round(c.parsed/total*100)}%)`}
         }
       }
     }
   });
 }
 
-// ── Render results ────────────────────────────────────────────────────────────
-let lastPlanData = null;
-
+// ════════════════════════════════════════════════════════════════════════════
+// RENDER RESULTS
+// ════════════════════════════════════════════════════════════════════════════
 function renderResults(data, baseline) {
-  lastPlanData = { data, baseline };
+  lastPlanData = {data, baseline};
 
   const optCost  = data.total_cost_bdt;
   const baseCost = baseline ? baseline.total_cost_bdt : null;
   const saved    = baseCost !== null ? baseCost - optCost : null;
   const pct      = (saved !== null && baseCost) ? (saved / baseCost * 100) : null;
 
-  // Metrics
-  const setCost = document.getElementById('m-cost');
-  if (setCost) setCost.innerHTML = `${optCost.toLocaleString('en-BD',{maximumFractionDigits:0})}<span class="metric-unit">BDT</span>`;
+  // Animated counters
+  const mCost = document.getElementById('m-cost');
+  if (mCost) animateCounter({
+    innerHTML: '',
+    set innerHTML(v) { mCost.innerHTML = v + '<span class="metric-unit">BDT</span>'; }
+  }, optCost, true);
 
-  const setCostSub = document.getElementById('m-cost-sub');
-  if (setCostSub) setCostSub.innerHTML = baseCost
-    ? `<span class="up">↓</span> Baseline: ৳${baseCost.toLocaleString('en-BD',{maximumFractionDigits:0})}`
-    : 'Optimized 24-hour cost';
-
-  const setSaving = document.getElementById('m-saving');
-  const setSavingPct = document.getElementById('m-saving-pct');
-  if (setSaving) {
-    if (saved !== null && saved >= 0) {
-      setSaving.innerHTML = `${saved.toLocaleString('en-BD',{maximumFractionDigits:0})}<span class="metric-unit">BDT</span>`;
-      if (setSavingPct) setSavingPct.innerHTML = `<span class="up">↑ ${pct.toFixed(1)}% cheaper</span> than no-battery plan`;
-    } else {
-      setSaving.innerHTML = `—<span class="metric-unit">BDT</span>`;
-      if (setSavingPct) setSavingPct.textContent = 'Calculating…';
-    }
+  if (saved !== null && saved >= 0) {
+    const mSav = document.getElementById('m-saving');
+    if (mSav) animateCounter({
+      set innerHTML(v) { mSav.innerHTML = v + '<span class="metric-unit">BDT</span>'; }
+    }, saved, true);
+    const sp = document.getElementById('m-saving-pct');
+    if (sp) sp.innerHTML = `<span class="up">↑ ${pct.toFixed(1)}% cheaper</span> than no-battery`;
   }
 
-  const setGrid = document.getElementById('m-grid');
-  if (setGrid) setGrid.innerHTML = `${data.total_grid_kwh.toFixed(1)}<span class="metric-unit">kWh</span>`;
-  const setGridSub = document.getElementById('m-grid-sub');
-  if (setGridSub && baseline) {
-    const gs = baseline.total_grid_kwh - data.total_grid_kwh;
-    setGridSub.innerHTML = `<span class="up">↓ ${gs.toFixed(1)} kWh</span> less than baseline`;
+  const mGrid = document.getElementById('m-grid');
+  if (mGrid) animateCounter({
+    set innerHTML(v) { mGrid.innerHTML = v + '<span class="metric-unit">kWh</span>'; }
+  }, data.total_grid_kwh, false);
+
+  const mPeak = document.getElementById('m-peak');
+  if (mPeak) animateCounter({
+    set innerHTML(v) { mPeak.innerHTML = v + '<span class="metric-unit">kWh</span>'; }
+  }, data.peak_grid_kwh, false);
+
+  // Subtitles
+  const cs = document.getElementById('m-cost-sub');
+  if (cs) cs.innerHTML = baseCost ? `<span class="up">↓</span> Baseline: ৳${baseCost.toLocaleString('en-BD',{maximumFractionDigits:0})}` : 'Optimized 24-hour cost';
+  const gs = document.getElementById('m-grid-sub');
+  if (gs && baseline) {
+    const diff = baseline.total_grid_kwh - data.total_grid_kwh;
+    gs.innerHTML = `<span class="up">↓ ${diff.toFixed(1)} kWh</span> less than baseline`;
   }
+  const ps = document.getElementById('m-peak-sub');
+  if (ps) ps.textContent = 'highest single-hour draw';
 
-  const setPeak = document.getElementById('m-peak');
-  if (setPeak) setPeak.innerHTML = `${data.peak_grid_kwh.toFixed(1)}<span class="metric-unit">kWh</span>`;
-  const setPeakSub = document.getElementById('m-peak-sub');
-  if (setPeakSub) setPeakSub.textContent = 'highest single-hour draw';
-
-  // Summary
+  // Plan summary with typing effect
   const sumEl = document.getElementById('plan-summary-text');
-  if (sumEl) sumEl.textContent = data.plan_summary;
+  if (sumEl) typeText(sumEl, data.plan_summary, 15);
 
   // Directives
   const dl = document.getElementById('directive-list');
   if (dl) {
     dl.innerHTML = '';
     data.directive_interpretation.forEach(d => {
-      const el = document.createElement('div');
-      el.className = 'd-card';
-      const adjDiv = d.structured_adjustment
-        ? `<div class="d-adj">${JSON.stringify(d.structured_adjustment)}</div>` : '';
+      const el = document.createElement('div'); el.className = 'd-card';
+      const adjDiv = d.structured_adjustment ? `<div class="d-adj">${JSON.stringify(d.structured_adjustment)}</div>` : '';
       el.innerHTML = `
         <div class="d-idx">${d.note_index}</div>
         <div class="d-badge ${d.directive_type}">${d.directive_type.replace(/_/g,' ')}</div>
         <div class="d-body">
-          <div class="d-explanation">${d.explanation || '—'}</div>
+          <div class="d-explanation">${d.explanation||'—'}</div>
           ${adjDiv}
         </div>`;
       dl.appendChild(el);
@@ -1041,18 +1276,17 @@ function renderResults(data, baseline) {
   const tbody = document.getElementById('plan-tbody');
   if (tbody) {
     tbody.innerHTML = '';
-    const hoursMap = {};
-    activeHours.forEach(h => hoursMap[h.hour] = h);
+    const hm = {}; activeHours.forEach(h => hm[h.hour] = h);
     data.hourly_plan.forEach(e => {
       const tr = document.createElement('tr');
-      if (e.battery_action === 'charge') tr.className = 'row-charge';
-      else if (e.battery_action === 'discharge') tr.className = 'row-discharge';
-      const hd   = hoursMap[e.hour];
-      const cost = (e.grid_kwh * (hd ? hd.tariff_bdt_per_kwh : 0)).toFixed(2);
-      tr.innerHTML = `
+      if (e.battery_action==='charge') tr.className='row-charge';
+      else if (e.battery_action==='discharge') tr.className='row-discharge';
+      const hd = hm[e.hour];
+      const cost = (e.grid_kwh*(hd?hd.tariff_bdt_per_kwh:0)).toFixed(2);
+      tr.innerHTML=`
         <td>${String(e.hour).padStart(2,'0')}:00</td>
-        <td>${hd ? hd.demand_kwh : '—'}</td>
-        <td style="color:var(--teal)">${hd ? hd.solar_kwh : '—'}</td>
+        <td>${hd?hd.demand_kwh:'—'}</td>
+        <td style="color:var(--teal)">${hd?hd.solar_kwh:'—'}</td>
         <td>${e.grid_kwh.toFixed(2)}</td>
         <td>${e.solar_used_kwh.toFixed(2)}</td>
         <td class="act-${e.battery_action}">${e.battery_action}</td>
@@ -1063,7 +1297,6 @@ function renderResults(data, baseline) {
     });
   }
 
-  // Charts
   renderBarChart(data.hourly_plan);
   renderDonut(data.hourly_plan);
 
@@ -1072,201 +1305,234 @@ function renderResults(data, baseline) {
   const resultsEl = document.getElementById('results');
   if (emptyEl) emptyEl.style.display = 'none';
   if (resultsEl) resultsEl.style.display = 'flex';
+
+  // Save to history
+  saveHistory(data, baseCost);
+
+  // Show success toast
+  showToast(`✓ Plan optimized — ৳${optCost.toLocaleString('en-BD',{maximumFractionDigits:0})} BDT total cost`);
 }
 
-// ── CSV Export ────────────────────────────────────────────────────────────────
-const btnCsv = document.getElementById('btn-csv');
-if (btnCsv) {
-  btnCsv.addEventListener('click', () => {
-    if (!lastPlanData) return;
-    const { data } = lastPlanData;
-    const hm = {};
-    activeHours.forEach(h => hm[h.hour] = h);
-    const rows = [['Hour','Demand_kWh','Solar_kWh','Tariff_BDT_per_kWh','Grid_kWh','Solar_Used_kWh','Battery_Action','Battery_kWh','Battery_After_kWh','Cost_BDT']];
-    data.hourly_plan.forEach(e => {
-      const hd = hm[e.hour];
-      rows.push([
-        `${String(e.hour).padStart(2,'0')}:00`,
-        hd ? hd.demand_kwh : '',
-        hd ? hd.solar_kwh : '',
-        hd ? hd.tariff_bdt_per_kwh : '',
-        e.grid_kwh.toFixed(4),
-        e.solar_used_kwh.toFixed(4),
-        e.battery_action,
-        e.battery_kwh.toFixed(4),
-        e.battery_energy_after_kwh.toFixed(4),
-        (e.grid_kwh * (hd ? hd.tariff_bdt_per_kwh : 0)).toFixed(2)
-      ]);
+// ════════════════════════════════════════════════════════════════════════════
+// HISTORY
+// ════════════════════════════════════════════════════════════════════════════
+function saveHistory(data, baseCost) {
+  let history = [];
+  try { history = JSON.parse(localStorage.getItem('gp_history') || '[]'); } catch {}
+  history.unshift({
+    scenario_id: data.scenario_id,
+    total_cost_bdt: data.total_cost_bdt,
+    total_grid_kwh: data.total_grid_kwh,
+    peak_grid_kwh: data.peak_grid_kwh,
+    baseline_cost: baseCost,
+    ts: Date.now(),
+    plan: data,
+    baseline_data: baseCost,
+  });
+  if (history.length > MAX_HISTORY) history = history.slice(0, MAX_HISTORY);
+  try { localStorage.setItem('gp_history', JSON.stringify(history)); } catch {}
+  loadHistoryUI();
+}
+
+function loadHistoryUI() {
+  let history = [];
+  try { history = JSON.parse(localStorage.getItem('gp_history') || '[]'); } catch {}
+  const strip = document.getElementById('history-strip');
+  if (!strip) return;
+  // Remove old pills (keep label)
+  [...strip.querySelectorAll('.history-pill')].forEach(p => p.remove());
+  if (!history.length) { strip.style.display = 'none'; return; }
+  strip.style.display = 'flex';
+  history.forEach((h, i) => {
+    const pill = document.createElement('div');
+    pill.className = 'history-pill';
+    const ago = formatAgo(h.ts);
+    pill.innerHTML = `${h.scenario_id} <span class="h-cost">৳${Math.round(h.total_cost_bdt).toLocaleString('en-BD')}</span> <span style="opacity:0.5;font-size:0.62rem">${ago}</span>`;
+    pill.title = `Click to reload this plan`;
+    pill.addEventListener('click', () => {
+      if (h.plan) renderResults(h.plan, h.baseline_data ? {total_cost_bdt:h.baseline_data, total_grid_kwh:0} : null);
     });
-    rows.push([], ['Scenario', data.scenario_id], ['Total Grid kWh', data.total_grid_kwh], ['Total Cost BDT', data.total_cost_bdt], ['Peak Grid kWh', data.peak_grid_kwh]);
-    const csv = rows.map(r => r.join(',')).join('\n');
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv'}));
-    a.download = `gridpilot_${data.scenario_id}_plan.csv`;
-    a.click();
+    strip.appendChild(pill);
   });
 }
 
-// ── Progress stepper (FIX: use array of timers, not single) ──────────────────
-let stepTimers = [];
+function formatAgo(ts) {
+  const s = Math.floor((Date.now() - ts) / 1000);
+  if (s < 60) return 'just now';
+  if (s < 3600) return Math.floor(s/60)+'m ago';
+  return Math.floor(s/3600)+'h ago';
+}
 
+// ════════════════════════════════════════════════════════════════════════════
+// TOAST
+// ════════════════════════════════════════════════════════════════════════════
+let toastTimer = null;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  const tx = document.getElementById('toast-text');
+  if (!t) return;
+  if (tx) tx.textContent = msg;
+  t.classList.add('show');
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// CSV EXPORT
+// ════════════════════════════════════════════════════════════════════════════
+const btnCsv = document.getElementById('btn-csv');
+if (btnCsv) btnCsv.addEventListener('click', () => {
+  if (!lastPlanData) return;
+  const {data} = lastPlanData;
+  const hm = {}; activeHours.forEach(h => hm[h.hour]=h);
+  const rows = [['Hour','Demand_kWh','Solar_kWh','Tariff_BDT','Grid_kWh','Solar_Used_kWh','Battery_Action','Battery_kWh','Battery_After_kWh','Cost_BDT']];
+  data.hourly_plan.forEach(e => {
+    const hd = hm[e.hour];
+    rows.push([
+      `${String(e.hour).padStart(2,'0')}:00`,
+      hd?hd.demand_kwh:'',hd?hd.solar_kwh:'',hd?hd.tariff_bdt_per_kwh:'',
+      e.grid_kwh.toFixed(4),e.solar_used_kwh.toFixed(4),e.battery_action,
+      e.battery_kwh.toFixed(4),e.battery_energy_after_kwh.toFixed(4),
+      (e.grid_kwh*(hd?hd.tariff_bdt_per_kwh:0)).toFixed(2)
+    ]);
+  });
+  rows.push([],['Scenario',data.scenario_id],['Total Grid kWh',data.total_grid_kwh],
+    ['Total Cost BDT',data.total_cost_bdt],['Peak Grid kWh',data.peak_grid_kwh]);
+  const csv = rows.map(r=>r.join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+  a.download = `gridpilot_${data.scenario_id}_plan.csv`;
+  a.click();
+  showToast(`CSV exported — ${data.scenario_id}_plan.csv`);
+});
+
+// ════════════════════════════════════════════════════════════════════════════
+// STEP ANIMATION
+// ════════════════════════════════════════════════════════════════════════════
 function resetBtnText() {
   const inner = document.getElementById('btn-inner');
-  if (inner) inner.innerHTML = `
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-    </svg> Optimize 24-Hour Plan`;
+  if (inner) inner.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Optimize 24-Hour Plan`;
 }
 
 function startSteps() {
-  stopSteps();
+  stopSteps(false);
   const stepsEl = document.getElementById('progress-steps');
   if (stepsEl) stepsEl.style.display = 'block';
-
-  for (let i = 1; i <= 5; i++) {
-    const s = document.getElementById(`step-${i}`);
-    const ic = document.getElementById(`s${i}-icon`);
-    if (s) s.className = 'step';
-    if (ic) { ic.className = 'step-icon'; ic.textContent = '○'; }
+  for (let i=1;i<=5;i++) {
+    const s=document.getElementById(`step-${i}`),ic=document.getElementById(`s${i}-icon`);
+    if(s)s.className='step'; if(ic){ic.className='step-icon';ic.textContent='○';}
   }
-
-  const durations = [400, 1500, 500, 3000, 500];
-  let cumulative = 0;
-
-  for (let i = 1; i <= 5; i++) {
-    const activateAt = cumulative;
-    const doneAt     = cumulative + durations[i - 1];
-    cumulative = doneAt;
-
-    const idx = i;
-    stepTimers.push(setTimeout(() => {
-      const s  = document.getElementById(`step-${idx}`);
-      const ic = document.getElementById(`s${idx}-icon`);
-      if (s)  s.className = 'step active';
-      if (ic) { ic.className = 'step-spinner'; ic.textContent = ''; }
-    }, activateAt));
-
-    stepTimers.push(setTimeout(() => {
-      const s  = document.getElementById(`step-${idx}`);
-      const ic = document.getElementById(`s${idx}-icon`);
-      if (s)  s.className = 'step done';
-      if (ic) { ic.className = 'step-icon'; ic.textContent = '✓'; }
-    }, doneAt));
+  const dur=[400,1600,500,3200,500]; let cum=0;
+  for(let i=1;i<=5;i++){
+    const at=cum,done=cum+dur[i-1]; cum=done; const idx=i;
+    stepTimers.push(setTimeout(()=>{
+      const s=document.getElementById(`step-${idx}`),ic=document.getElementById(`s${idx}-icon`);
+      if(s)s.className='step active'; if(ic){ic.className='step-spinner';ic.textContent='';}
+    },at));
+    stepTimers.push(setTimeout(()=>{
+      const s=document.getElementById(`step-${idx}`),ic=document.getElementById(`s${idx}-icon`);
+      if(s)s.className='step done'; if(ic){ic.className='step-icon';ic.textContent='✓';}
+    },done));
   }
 }
 
-function stopSteps() {
-  stepTimers.forEach(t => clearTimeout(t));
-  stepTimers = [];
-  // Mark all done immediately
-  for (let i = 1; i <= 5; i++) {
-    const s  = document.getElementById(`step-${i}`);
-    const ic = document.getElementById(`s${i}-icon`);
-    if (s)  s.className = 'step done';
-    if (ic) { ic.className = 'step-icon'; ic.textContent = '✓'; }
+function stopSteps(hide=true) {
+  stepTimers.forEach(t=>clearTimeout(t)); stepTimers=[];
+  for(let i=1;i<=5;i++){
+    const s=document.getElementById(`step-${i}`),ic=document.getElementById(`s${i}-icon`);
+    if(s)s.className='step done'; if(ic){ic.className='step-icon';ic.textContent='✓';}
   }
-  setTimeout(() => {
-    const stepsEl = document.getElementById('progress-steps');
-    if (stepsEl) stepsEl.style.display = 'none';
-  }, 1000);
+  if(hide) setTimeout(()=>{const e=document.getElementById('progress-steps');if(e)e.style.display='none';},1200);
 }
 
 function cancelSteps() {
-  stepTimers.forEach(t => clearTimeout(t));
-  stepTimers = [];
-  const stepsEl = document.getElementById('progress-steps');
-  if (stepsEl) stepsEl.style.display = 'none';
+  stepTimers.forEach(t=>clearTimeout(t)); stepTimers=[];
+  const e=document.getElementById('progress-steps');if(e)e.style.display='none';
 }
 
-// ── Error helpers ─────────────────────────────────────────────────────────────
-const errorToast = document.getElementById('error-toast');
+// ════════════════════════════════════════════════════════════════════════════
+// ERROR
+// ════════════════════════════════════════════════════════════════════════════
 function showError(msg) {
-  if (!errorToast) return;
-  errorToast.style.display = 'block';
-  errorToast.innerHTML = '⚠ ' + msg;
+  const e=document.getElementById('error-toast');
+  if(!e)return; e.style.display='block'; e.innerHTML='⚠ '+msg;
 }
 function clearError() {
-  if (!errorToast) return;
-  errorToast.style.display = 'none';
-  errorToast.textContent = '';
+  const e=document.getElementById('error-toast');
+  if(!e)return; e.style.display='none'; e.textContent='';
 }
 
-// ── Submit ────────────────────────────────────────────────────────────────────
+// ════════════════════════════════════════════════════════════════════════════
+// SUBMIT
+// ════════════════════════════════════════════════════════════════════════════
 const btnOpt = document.getElementById('btn-optimize');
-if (btnOpt) {
-  btnOpt.addEventListener('click', async () => {
-    clearError();
-    let payload;
-    try { payload = getPayload(); } catch (e) { showError(e.message); return; }
+if (btnOpt) btnOpt.addEventListener('click', async () => {
+  clearError();
+  let payload;
+  try { payload = getPayload(); } catch(e) { showError(e.message); return; }
 
-    btnOpt.disabled = true;
-    const inner = document.getElementById('btn-inner');
-    if (inner) inner.innerHTML = `<div class="spinner"></div> Optimizing…`;
-    startSteps();
+  btnOpt.disabled = true;
+  const inner = document.getElementById('btn-inner');
+  if (inner) inner.innerHTML = `<div class="spinner"></div> Optimizing…`;
+  startSteps();
 
-    // Use AbortController (wider browser support than AbortSignal.timeout)
-    const optCtrl  = new AbortController();
-    const baseCtrl = new AbortController();
-    const optTimeout  = setTimeout(() => optCtrl.abort(),  33000);
-    const baseTimeout = setTimeout(() => baseCtrl.abort(), 6000);
+  const optCtrl=new AbortController(), baseCtrl=new AbortController();
+  const ot=setTimeout(()=>optCtrl.abort(),33000);
+  const bt=setTimeout(()=>baseCtrl.abort(),8000);
 
-    try {
-      const [optResp, baseResp] = await Promise.all([
-        fetch('/optimize-energy', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-          signal: optCtrl.signal,
-        }),
-        fetch('/baseline-cost', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ hours: payload.hours }),
-          signal: baseCtrl.signal,
-        }).catch(() => null)
-      ]);
-
-      clearTimeout(optTimeout);
-      clearTimeout(baseTimeout);
-
-      if (!optResp.ok) {
-        const err = await optResp.json().catch(() => ({}));
-        throw new Error(err.error || `Server error (HTTP ${optResp.status})`);
-      }
-
-      const data     = await optResp.json();
-      const baseline = (baseResp && baseResp.ok) ? await baseResp.json().catch(() => null) : null;
-
-      stopSteps();
-      renderResults(data, baseline);
-    } catch (e) {
-      clearTimeout(optTimeout);
-      clearTimeout(baseTimeout);
-      cancelSteps();
-      const msg = e.name === 'AbortError'
-        ? 'Request timed out after 33s. Check the service is running.'
-        : (e.message || 'Request failed. Check the service is running.');
-      showError(msg);
-    } finally {
-      btnOpt.disabled = false;
-      resetBtnText();
+  try {
+    const [optResp, baseResp] = await Promise.all([
+      fetch('/optimize-energy', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),signal:optCtrl.signal}),
+      fetch('/baseline-cost',   {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({hours:payload.hours}),signal:baseCtrl.signal}).catch(()=>null)
+    ]);
+    clearTimeout(ot); clearTimeout(bt);
+    if (!optResp.ok) {
+      const err = await optResp.json().catch(()=>({}));
+      throw new Error(err.error||`Server error (HTTP ${optResp.status})`);
     }
-  });
-}
+    const data = await optResp.json();
+    const baseline = (baseResp&&baseResp.ok) ? await baseResp.json().catch(()=>null) : null;
+    stopSteps();
+    renderResults(data, baseline);
+  } catch(e) {
+    clearTimeout(ot); clearTimeout(bt); cancelSteps();
+    const msg = e.name==='AbortError'
+      ? 'Request timed out after 33s. Check the service is running.'
+      : (e.message||'Request failed.');
+    showError(msg);
+  } finally {
+    btnOpt.disabled=false; resetBtnText();
+  }
+});
 
-// ── Health check ──────────────────────────────────────────────────────────────
-(async () => {
+// ════════════════════════════════════════════════════════════════════════════
+// HEALTH + /INFO
+// ════════════════════════════════════════════════════════════════════════════
+async function healthAndInfo() {
   const pill = document.getElementById('status-pill');
   const txt  = document.getElementById('status-text');
   try {
-    const r = await fetch('/health');
-    if (!r.ok) throw new Error('not ok');
+    const [hr, ir] = await Promise.all([
+      fetch('/health').catch(()=>null),
+      fetch('/info').catch(()=>null)
+    ]);
+    if (!hr || !hr.ok) throw new Error('offline');
     if (txt) txt.textContent = 'API Online';
+
+    if (ir && ir.ok) {
+      const info = await ir.json();
+      const pm = document.getElementById('pill-model');
+      const pk = document.getElementById('pill-keys');
+      const po = document.getElementById('pill-optimizer');
+      if (pm) { pm.textContent = info.llm_model; pm.classList.add('loaded'); }
+      if (pk) { pk.textContent = `${info.key_pool_size} API Keys`; pk.classList.add('loaded'); }
+      if (po) { po.textContent = info.optimizer; po.classList.add('loaded'); }
+    }
   } catch {
     if (pill) pill.classList.add('offline');
     if (txt)  txt.textContent = 'API Offline';
   }
-})();
+}
 </script>
 </body>
 </html>

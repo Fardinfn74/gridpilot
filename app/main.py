@@ -68,9 +68,31 @@ STATIC_DIR = Path(__file__).parent / "static"
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
 
+import time as _time
+_START_TIME = _time.time()
+
 @app.get("/", include_in_schema=False)
 async def root():
     return FileResponse(str(STATIC_DIR / "index.html"))
+
+
+@app.get("/info")
+async def info() -> dict:
+    """System information — model, provider, pool size, uptime."""
+    uptime_s = int(_time.time() - _START_TIME)
+    h, rem = divmod(uptime_s, 3600)
+    m, s   = divmod(rem, 60)
+    return {
+        "service":       "GridPilot AI",
+        "version":       "2.0.0",
+        "llm_provider":  config.LLM_PROVIDER,
+        "llm_model":     config.LLM_MODEL,
+        "key_pool_size": len(config.LLM_API_KEY_POOL),
+        "optimizer":     "PuLP + CBC (MILP)",
+        "uptime":        f"{h}h {m}m {s}s",
+        "endpoints":     ["/health", "/info", "/optimize-energy", "/baseline-cost"],
+    }
+
 
 
 # ---------------------------------------------------------------------------
