@@ -1,0 +1,1 @@
+# GridPilot AI — app package
