@@ -1,5 +1,13 @@
 # GridPilot AI — GridWise LLM Preliminary Submission
 
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Railway-blueviolet?style=for-the-badge)](https://gridpilot-production.up.railway.app/)
+[![API Health](https://img.shields.io/badge/API-Online-brightgreen?style=for-the-badge)](https://gridpilot-production.up.railway.app/health)
+
+## 🔗 Live Demo
+**→ [https://gridpilot-production.up.railway.app/](https://gridpilot-production.up.railway.app/)**
+
+> Open the link, click **⚡ Load Sample**, then click **Optimize 24-Hour Plan** to see the full pipeline in action.
+
 ## What this is
 
 LLM-assisted 24-hour campus energy optimizer. Interprets natural-language operator notes into structured
@@ -8,9 +16,10 @@ battery/grid/solar schedule (MILP optimizer).
 
 ## Model / provider
 
-- **LLM:** Anthropic Claude (`claude-3-5-haiku-20241022` by default), used exclusively to produce
-  `directive_interpretation` from `operator_notes`. Switch to OpenAI by setting `LLM_PROVIDER=openai`.
+- **LLM:** Google Gemini 2.5 Flash (`gemini-2.5-flash`), used exclusively to produce
+  `directive_interpretation` from `operator_notes`. 5-key fallback pool for reliability under load.
 - **Optimizer:** PuLP + CBC (MILP), minimizes total grid cost subject to GridWise + directive constraints.
+
 
 ## Architecture
 
