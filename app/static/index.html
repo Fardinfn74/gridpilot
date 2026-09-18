@@ -999,7 +999,7 @@ function loadPreset(key) {
 // ════════════════════════════════════════════════════════════════════════════
 // NOTES
 // ════════════════════════════════════════════════════════════════════════════
-const btnAddNote = document.getElementById('btn-add-note');
+
 
 function addNote(val = '') {
   const nc = document.getElementById('notes-container');
@@ -1025,9 +1025,10 @@ function addNote(val = '') {
 function renumber() {
   const nc = document.getElementById('notes-container');
   [...nc.querySelectorAll('.note-num')].forEach((n, i) => n.textContent = i + 1);
-  btnAddNote.style.display = nc.children.length >= 3 ? 'none' : '';
+  const ban = document.getElementById('btn-add-note');
+  if (ban) ban.style.display = nc.children.length >= 3 ? 'none' : '';
 }
-btnAddNote.addEventListener('click', () => addNote(''));
+document.getElementById('btn-add-note').addEventListener('click', () => addNote(''));
 
 // ════════════════════════════════════════════════════════════════════════════
 // HOURS TABLE
