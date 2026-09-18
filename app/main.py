@@ -18,6 +18,7 @@ from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import ValidationError
@@ -60,6 +61,49 @@ app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 @app.get("/", include_in_schema=False)
 async def root():
     return FileResponse(str(STATIC_DIR / "index.html"))
+
+
+# ---------------------------------------------------------------------------
+# CORS — allow calls from any origin (judges, browser tools, etc.)
+# ---------------------------------------------------------------------------
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["*"],
+)
+
+
+# ---------------------------------------------------------------------------
+# Baseline endpoint — naive plan (no battery dispatch, all demand from grid
+# minus solar) used for the savings comparison widget in the dashboard.
+# ---------------------------------------------------------------------------
+@app.post("/baseline-cost")
+async def baseline_cost(request: Request):
+    """Compute the naive baseline cost: use all available solar, pull the
+    rest from grid, no battery. Returns total_cost_bdt and total_grid_kwh."""
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse(status_code=400, content={"error": "Invalid JSON"})
+
+    hours = body.get("hours", [])
+    if len(hours) != 24:
+        return JSONResponse(status_code=400, content={"error": "Need 24 hours"})
+
+    total_cost = 0.0
+    total_grid = 0.0
+    for h in hours:
+        solar = min(float(h.get("solar_kwh", 0)), float(h.get("demand_kwh", 0)))
+        grid = max(0.0, float(h.get("demand_kwh", 0)) - solar)
+        cost = grid * float(h.get("tariff_bdt_per_kwh", 0))
+        total_grid += grid
+        total_cost += cost
+
+    return {
+        "total_grid_kwh": round(total_grid, 4),
+        "total_cost_bdt": round(total_cost, 4),
+    }
 
 
 # ---------------------------------------------------------------------------

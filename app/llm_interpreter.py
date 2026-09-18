@@ -71,23 +71,40 @@ def _call_anthropic(system: str, user_message: str, timeout: float) -> str:
 
 
 def _call_google(system: str, user_message: str, timeout: float) -> str:
-    """Call Google AI Studio (Gemini) via google-generativeai SDK."""
-    import google.generativeai as genai
+    """Call Google AI Studio (Gemini) cycling through the key pool on quota/auth errors."""
+    from google import genai
+    from google.genai import types
 
-    genai.configure(api_key=config.LLM_API_KEY)
-    model = genai.GenerativeModel(
-        model_name=config.LLM_MODEL,
-        system_instruction=system,
-    )
-    response = model.generate_content(
-        user_message,
-        generation_config=genai.types.GenerationConfig(
-            max_output_tokens=1024,
-            temperature=0.0,
-        ),
-        request_options={"timeout": timeout},
-    )
-    return response.text
+    keys = config.LLM_API_KEY_POOL or [config.LLM_API_KEY]
+    last_exc: Exception = RuntimeError("No API keys configured.")
+
+    for idx, api_key in enumerate(keys):
+        try:
+            client = genai.Client(api_key=api_key)
+            response = client.models.generate_content(
+                model=config.LLM_MODEL,
+                contents=user_message,
+                config=types.GenerateContentConfig(
+                    system_instruction=system,
+                    max_output_tokens=1024,
+                    temperature=0.0,
+                ),
+            )
+            if idx > 0:
+                logger.info("LLM: key #%d succeeded after %d failure(s).", idx + 1, idx)
+            return response.text
+        except Exception as exc:
+            err_str = str(exc).lower()
+            # Only fall through to next key on quota/rate-limit/auth errors
+            if any(kw in err_str for kw in ("quota", "rate", "429", "403", "resource exhausted", "api key")):
+                logger.warning("LLM: key #%d failed (%s), trying next key…", idx + 1, type(exc).__name__)
+                last_exc = exc
+                continue
+            # Any other error (parse, network, etc.) — raise immediately
+            raise
+
+    raise last_exc
+
 
 
 def _call_openrouter(system: str, user_message: str, timeout: float) -> str:

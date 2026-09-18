@@ -13,6 +13,15 @@ LLM_API_KEY: str = os.environ.get("LLM_API_KEY", "")
 LLM_MODEL: str = os.environ.get("LLM_MODEL", "gemini-2.5-flash")
 LLM_PROVIDER: str = os.environ.get("LLM_PROVIDER", "google")  # "google" | "openrouter" | "anthropic" | "openai"
 
+# Optional pool of keys — comma-separated. If set, the interpreter will
+# cycle through them on quota/rate-limit errors for maximum reliability.
+_pool_raw: str = os.environ.get("LLM_API_KEY_POOL", "")
+LLM_API_KEY_POOL: list[str] = (
+    [k.strip() for k in _pool_raw.split(",") if k.strip()]
+    if _pool_raw
+    else ([LLM_API_KEY] if LLM_API_KEY else [])
+)
+
 # Service settings
 PORT: int = int(os.environ.get("PORT", "8000"))
 

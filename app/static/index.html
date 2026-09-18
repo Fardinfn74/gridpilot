@@ -7,31 +7,33 @@
   <meta name="description" content="Tell your energy system what's happening today in plain English. GridPilot AI re-optimizes the next 24 hours instantly, safely, and provably cheaper." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:        #0a0f1e;
-      --bg2:       #0f1629;
-      --surface:   rgba(255,255,255,0.04);
-      --surface2:  rgba(255,255,255,0.07);
-      --border:    rgba(255,255,255,0.08);
-      --teal:      #00d4b8;
-      --teal-dim:  rgba(0,212,184,0.15);
-      --blue:      #4f8ef7;
-      --yellow:    #f5c518;
-      --red:       #ff5c5c;
-      --green:     #34d399;
-      --purple:    #a78bfa;
-      --text:      #e2e8f0;
-      --muted:     #64748b;
-      --radius:    14px;
-      --shadow:    0 8px 32px rgba(0,0,0,0.4);
+      --bg:       #050d1a;
+      --bg2:      #0a1628;
+      --surface:  rgba(255,255,255,0.04);
+      --surface2: rgba(255,255,255,0.07);
+      --border:   rgba(255,255,255,0.08);
+      --teal:     #00d4b8;
+      --teal-dim: rgba(0,212,184,0.12);
+      --blue:     #4f8ef7;
+      --yellow:   #fbbf24;
+      --red:      #f87171;
+      --green:    #34d399;
+      --purple:   #a78bfa;
+      --orange:   #fb923c;
+      --text:     #e2e8f0;
+      --muted:    #64748b;
+      --radius:   16px;
+      --shadow:   0 8px 40px rgba(0,0,0,0.5);
     }
 
     html { scroll-behavior: smooth; }
+
     body {
       font-family: 'Inter', sans-serif;
       background: var(--bg);
@@ -40,209 +42,203 @@
       overflow-x: hidden;
     }
 
-    /* Background grid pattern */
+    /* Animated background */
     body::before {
       content: '';
-      position: fixed; inset: 0;
-      background-image:
-        linear-gradient(rgba(79,142,247,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(79,142,247,0.03) 1px, transparent 1px);
-      background-size: 40px 40px;
+      position: fixed; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 20% -10%, rgba(0,212,184,0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 80% 110%, rgba(79,142,247,0.06) 0%, transparent 60%);
       pointer-events: none;
-      z-index: 0;
+    }
+    body::after {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background-image:
+        linear-gradient(rgba(79,142,247,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(79,142,247,0.025) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
     }
 
-    /* ── HEADER ────────────────────────────────────── */
+    /* ── HEADER ── */
     header {
-      position: sticky; top: 0; z-index: 100;
+      position: sticky; top: 0; z-index: 200;
       display: flex; align-items: center; justify-content: space-between;
       padding: 0 2rem;
-      height: 64px;
-      background: rgba(10,15,30,0.85);
-      backdrop-filter: blur(20px);
+      height: 66px;
+      background: rgba(5,13,26,0.88);
+      backdrop-filter: blur(24px);
       border-bottom: 1px solid var(--border);
     }
     .logo {
       display: flex; align-items: center; gap: 10px;
-      font-size: 1.25rem; font-weight: 800; letter-spacing: -0.5px;
+      font-size: 1.2rem; font-weight: 800; letter-spacing: -0.5px;
     }
-    .logo svg { width: 32px; height: 32px; }
-    .logo span { color: var(--teal); }
-    .tagline {
+    .logo-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: linear-gradient(135deg, rgba(0,212,184,0.2), rgba(79,142,247,0.2));
+      border: 1px solid rgba(0,212,184,0.3);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .logo-icon svg { width: 20px; height: 20px; }
+    .logo-text { color: var(--text); }
+    .logo-text span { color: var(--teal); }
+
+    .header-center {
       font-size: 0.78rem; color: var(--muted);
       display: none;
     }
-    @media (min-width: 700px) { .tagline { display: block; } }
-    .status-dot {
+    @media (min-width: 900px) { .header-center { display: block; } }
+
+    .header-right { display: flex; align-items: center; gap: 1rem; }
+
+    .status-pill {
       display: flex; align-items: center; gap: 6px;
-      font-size: 0.78rem; color: var(--green);
+      font-size: 0.75rem; font-weight: 500;
+      padding: 4px 12px; border-radius: 20px;
+      background: rgba(52,211,153,0.1);
+      border: 1px solid rgba(52,211,153,0.2);
+      color: var(--green);
     }
-    .status-dot::before {
-      content: '';
-      width: 8px; height: 8px; border-radius: 50%;
-      background: var(--green);
-      box-shadow: 0 0 6px var(--green);
+    .status-pill.offline {
+      background: rgba(248,113,113,0.1);
+      border-color: rgba(248,113,113,0.2);
+      color: var(--red);
+    }
+    .status-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 6px currentColor;
       animation: pulse 2s infinite;
     }
-    @keyframes pulse {
-      0%,100% { opacity: 1; } 50% { opacity: 0.4; }
-    }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
 
-    /* ── MAIN LAYOUT ────────────────────────────────── */
+    /* ── LAYOUT ── */
     main {
       position: relative; z-index: 1;
       display: grid;
-      grid-template-columns: 420px 1fr;
+      grid-template-columns: 400px 1fr;
       gap: 1.5rem;
-      padding: 1.5rem 2rem 3rem;
+      padding: 1.5rem 2rem 4rem;
       max-width: 1600px; margin: 0 auto;
     }
-    @media (max-width: 1024px) {
-      main { grid-template-columns: 1fr; }
-    }
+    @media (max-width: 1100px) { main { grid-template-columns: 1fr; } }
 
-    /* ── CARDS ─────────────────────────────────────── */
+    /* ── CARDS ── */
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 1.5rem;
-      backdrop-filter: blur(10px);
+      padding: 1.4rem 1.5rem;
+      backdrop-filter: blur(12px);
       box-shadow: var(--shadow);
-      transition: border-color 0.2s;
+      transition: border-color 0.25s;
     }
-    .card:hover { border-color: rgba(255,255,255,0.14); }
+    .card:hover { border-color: rgba(255,255,255,0.13); }
+
     .card-title {
-      font-size: 0.7rem; font-weight: 600;
-      letter-spacing: 0.12em; text-transform: uppercase;
+      font-size: 0.68rem; font-weight: 700;
+      letter-spacing: 0.14em; text-transform: uppercase;
       color: var(--muted); margin-bottom: 1rem;
     }
 
-    /* ── LEFT PANEL ─────────────────────────────────── */
-    .left-panel { display: flex; flex-direction: column; gap: 1rem; }
-
-    /* Operator Notes */
-    .notes-header {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 0.75rem;
+    /* ── FORM ELEMENTS ── */
+    label {
+      display: block;
+      font-size: 0.72rem; color: var(--muted); font-weight: 500;
+      margin-bottom: 4px;
     }
-    .note-item {
-      display: flex; gap: 8px; align-items: flex-start;
-      margin-bottom: 0.6rem;
-    }
-    .note-number {
-      flex-shrink: 0;
-      width: 22px; height: 22px;
-      border-radius: 50%;
-      background: var(--teal-dim);
-      color: var(--teal);
-      font-size: 0.7rem; font-weight: 700;
-      display: flex; align-items: center; justify-content: center;
-      margin-top: 10px;
-    }
-    textarea.note-input {
-      flex: 1;
-      background: var(--surface2);
+    input[type=text], input[type=number], textarea {
+      width: 100%;
+      background: rgba(255,255,255,0.05);
       border: 1px solid var(--border);
       border-radius: 8px;
       color: var(--text);
-      font-family: 'Inter', sans-serif;
-      font-size: 0.88rem;
-      padding: 10px 12px;
-      resize: vertical;
-      min-height: 70px;
+      font-family: inherit; font-size: 0.88rem;
+      padding: 9px 12px;
       outline: none;
       transition: border-color 0.2s, box-shadow 0.2s;
     }
-    textarea.note-input:focus {
+    input[type=text]:focus, input[type=number]:focus, textarea:focus {
       border-color: var(--teal);
       box-shadow: 0 0 0 3px var(--teal-dim);
     }
-    textarea.note-input::placeholder { color: var(--muted); }
+    input[type=number] { font-family: 'JetBrains Mono', monospace; }
+    textarea { resize: vertical; min-height: 68px; font-size: 0.85rem; line-height: 1.5; }
+    ::placeholder { color: var(--muted); }
+
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem; }
+    .form-grid .full { grid-column: 1 / -1; }
+    .field { display: flex; flex-direction: column; gap: 4px; }
+
+    /* Notes */
+    .note-row { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 0.55rem; }
+    .note-num {
+      flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%;
+      background: var(--teal-dim); color: var(--teal);
+      font-size: 0.68rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      margin-top: 10px;
+    }
+    .btn-del-note {
+      flex-shrink: 0; background: none; border: none;
+      color: var(--muted); font-size: 0.95rem; cursor: pointer;
+      padding: 4px; margin-top: 8px; transition: color 0.2s;
+    }
+    .btn-del-note:hover { color: var(--red); }
 
     .btn-add-note {
-      background: none; border: 1px dashed var(--border);
+      width: 100%; background: none;
+      border: 1px dashed var(--border);
       border-radius: 8px; color: var(--muted);
-      font-size: 0.82rem; cursor: pointer;
-      padding: 8px; width: 100%;
+      font-size: 0.8rem; padding: 8px; cursor: pointer;
       transition: all 0.2s;
     }
     .btn-add-note:hover { border-color: var(--teal); color: var(--teal); }
 
-    .btn-del {
-      flex-shrink: 0;
-      background: none; border: none;
-      color: var(--muted); cursor: pointer;
-      font-size: 1rem; padding: 4px;
-      transition: color 0.2s;
-      margin-top: 8px;
+    /* Collapsible */
+    .section-head {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 0.75rem;
     }
-    .btn-del:hover { color: var(--red); }
+    .btn-collapse {
+      background: none; border: none; color: var(--muted);
+      font-size: 0.75rem; cursor: pointer;
+      display: flex; align-items: center; gap: 4px;
+      font-family: inherit; transition: color 0.2s;
+    }
+    .btn-collapse:hover { color: var(--text); }
+    .chevron { transition: transform 0.25s; display: inline-block; }
+    .btn-collapse.open .chevron { transform: rotate(180deg); }
+    .collapsible { overflow: hidden; transition: max-height 0.3s ease; }
 
-    /* Battery & Scenario fields */
-    .form-grid {
-      display: grid; grid-template-columns: 1fr 1fr;
-      gap: 0.75rem;
-    }
-    .field label {
-      display: block;
-      font-size: 0.73rem; color: var(--muted);
-      margin-bottom: 4px; font-weight: 500;
-    }
-    .field input {
-      width: 100%;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      color: var(--text);
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.88rem;
-      padding: 8px 10px;
-      outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-    .field input:focus {
-      border-color: var(--teal);
-      box-shadow: 0 0 0 3px var(--teal-dim);
-    }
-    .field.full { grid-column: 1 / -1; }
-
-    /* Scenario section */
-    .scenario-bar {
-      display: flex; gap: 0.75rem; align-items: flex-end;
-    }
+    /* Scenario bar */
+    .scenario-bar { display: flex; gap: 0.75rem; align-items: flex-end; }
     .scenario-bar .field { flex: 1; }
-
-    /* Load sample button */
     .btn-load {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      color: var(--muted); font-size: 0.8rem;
-      padding: 8px 14px; cursor: pointer;
-      white-space: nowrap;
-      transition: all 0.2s;
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 8px; color: var(--muted); font-size: 0.8rem;
+      padding: 9px 14px; cursor: pointer; white-space: nowrap;
+      font-family: inherit; transition: all 0.2s;
     }
     .btn-load:hover { border-color: var(--blue); color: var(--blue); }
 
     /* Optimize button */
     #btn-optimize {
-      width: 100%;
-      padding: 15px;
-      background: linear-gradient(135deg, var(--teal) 0%, #00a896 100%);
-      border: none; border-radius: var(--radius);
-      color: #0a0f1e; font-family: 'Inter', sans-serif;
+      width: 100%; padding: 15px;
+      background: linear-gradient(135deg, #00d4b8 0%, #00a896 100%);
+      border: none; border-radius: 12px;
+      color: #05111f; font-family: inherit;
       font-size: 1rem; font-weight: 700;
-      cursor: pointer; letter-spacing: 0.02em;
-      box-shadow: 0 4px 24px rgba(0,212,184,0.35);
+      cursor: pointer; letter-spacing: 0.01em;
+      box-shadow: 0 4px 28px rgba(0,212,184,0.35);
       transition: all 0.2s;
-      position: relative; overflow: hidden;
     }
-    #btn-optimize:hover {
+    #btn-optimize:hover:not(:disabled) {
       transform: translateY(-2px);
-      box-shadow: 0 8px 32px rgba(0,212,184,0.5);
+      box-shadow: 0 8px 36px rgba(0,212,184,0.5);
     }
-    #btn-optimize:active { transform: translateY(0); }
     #btn-optimize:disabled {
       background: var(--surface2); color: var(--muted);
       box-shadow: none; cursor: not-allowed; transform: none;
@@ -252,162 +248,220 @@
     /* Spinner */
     .spinner {
       width: 18px; height: 18px;
-      border: 2px solid rgba(10,15,30,0.3);
-      border-top-color: #0a0f1e;
+      border: 2px solid rgba(5,17,31,0.3);
+      border-top-color: #05111f;
       border-radius: 50%;
-      animation: spin 0.7s linear infinite;
+      animation: spin 0.65s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ── RIGHT PANEL ────────────────────────────────── */
+    /* ── PROGRESS STEPS ── */
+    #progress-steps {
+      display: none;
+      background: rgba(0,212,184,0.05);
+      border: 1px solid rgba(0,212,184,0.15);
+      border-radius: 10px;
+      padding: 14px 16px;
+    }
+    .step-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .step {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 0.82rem; color: var(--muted);
+      transition: color 0.3s;
+    }
+    .step.active { color: var(--teal); }
+    .step.done { color: var(--green); }
+    .step-icon { font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0; }
+    .step-spinner {
+      width: 14px; height: 14px; flex-shrink: 0;
+      border: 2px solid var(--teal-dim);
+      border-top-color: var(--teal);
+      border-radius: 50%;
+      animation: spin 0.65s linear infinite;
+    }
+
+    /* ── ERROR ── */
+    #error-toast {
+      display: none;
+      background: rgba(248,113,113,0.08);
+      border: 1px solid rgba(248,113,113,0.25);
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 0.85rem; color: #fca5a5;
+    }
+
+    /* ── RIGHT PANEL ── */
     .right-panel { display: flex; flex-direction: column; gap: 1rem; }
 
     /* Empty state */
     #empty-state {
       flex: 1; display: flex; flex-direction: column;
       align-items: center; justify-content: center;
-      min-height: 400px; text-align: center;
-      color: var(--muted);
+      min-height: 420px; text-align: center;
+      padding: 3rem;
     }
-    #empty-state svg { opacity: 0.3; margin-bottom: 1rem; }
-    #empty-state h3 { font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--text); opacity: 0.5; }
-    #empty-state p { font-size: 0.85rem; max-width: 300px; line-height: 1.6; }
+    .empty-icon {
+      width: 80px; height: 80px; border-radius: 20px;
+      background: linear-gradient(135deg, rgba(0,212,184,0.1), rgba(79,142,247,0.1));
+      border: 1px solid rgba(0,212,184,0.2);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1.5rem;
+    }
+    #empty-state h3 { font-size: 1.2rem; font-weight: 700; color: var(--text); opacity: 0.5; margin-bottom: 0.5rem; }
+    #empty-state p { font-size: 0.85rem; color: var(--muted); max-width: 300px; line-height: 1.7; }
 
-    /* Results (hidden until data) */
+    /* Results */
     #results { display: none; flex-direction: column; gap: 1rem; }
 
-    /* Metric cards */
-    .metrics-row {
-      display: grid; grid-template-columns: repeat(3, 1fr);
-      gap: 1rem;
-    }
+    /* ── METRICS ROW ── */
+    .metrics-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+    @media (max-width: 900px) { .metrics-row { grid-template-columns: repeat(2, 1fr); } }
+
     .metric-card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 1.25rem 1.5rem;
+      padding: 1.2rem 1.4rem;
       position: relative; overflow: hidden;
+      transition: transform 0.2s;
     }
+    .metric-card:hover { transform: translateY(-2px); }
+    .metric-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    }
+    .metric-card.cost::before   { background: linear-gradient(90deg, var(--teal), var(--blue)); }
+    .metric-card.saving::before { background: linear-gradient(90deg, var(--green), var(--teal)); }
+    .metric-card.grid::before   { background: linear-gradient(90deg, var(--red), var(--orange)); }
+    .metric-card.peak::before   { background: linear-gradient(90deg, var(--purple), var(--blue)); }
+
+    /* Glow dot */
     .metric-card::after {
       content: '';
-      position: absolute; top: 0; left: 0; right: 0;
-      height: 2px;
+      position: absolute; right: -20px; bottom: -20px;
+      width: 80px; height: 80px; border-radius: 50%;
+      opacity: 0.08;
     }
-    .metric-card.cost::after { background: linear-gradient(90deg, var(--teal), var(--blue)); }
-    .metric-card.grid::after { background: linear-gradient(90deg, var(--red), #ff8c42); }
-    .metric-card.peak::after { background: linear-gradient(90deg, var(--purple), var(--blue)); }
+    .metric-card.cost::after   { background: var(--teal); }
+    .metric-card.saving::after { background: var(--green); }
+    .metric-card.grid::after   { background: var(--red); }
+    .metric-card.peak::after   { background: var(--purple); }
 
-    .metric-label { font-size: 0.72rem; color: var(--muted); font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.5rem; }
-    .metric-value { font-size: 1.8rem; font-weight: 800; letter-spacing: -0.03em; font-family: 'JetBrains Mono', monospace; }
-    .metric-card.cost .metric-value { color: var(--teal); }
-    .metric-card.grid .metric-value { color: var(--red); }
-    .metric-card.peak .metric-value { color: var(--purple); }
-    .metric-unit { font-size: 0.8rem; font-weight: 400; color: var(--muted); margin-left: 4px; }
+    .metric-label { font-size: 0.68rem; color: var(--muted); font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.5rem; }
+    .metric-value { font-size: 1.65rem; font-weight: 900; letter-spacing: -0.03em; font-family: 'JetBrains Mono', monospace; line-height: 1; }
+    .metric-card.cost .metric-value   { color: var(--teal); }
+    .metric-card.saving .metric-value { color: var(--green); }
+    .metric-card.grid .metric-value   { color: var(--red); }
+    .metric-card.peak .metric-value   { color: var(--purple); }
+    .metric-unit { font-size: 0.75rem; font-weight: 400; color: var(--muted); margin-left: 3px; font-family: 'Inter', sans-serif; }
+    .metric-sub { font-size: 0.72rem; color: var(--muted); margin-top: 4px; }
+    .metric-sub .up   { color: var(--green); }
+    .metric-sub .down { color: var(--red); }
 
-    /* Chart */
-    .chart-wrapper {
-      position: relative;
-      height: 280px;
+    /* ── CHARTS ROW ── */
+    .charts-row { display: grid; grid-template-columns: 1fr 300px; gap: 1rem; }
+    @media (max-width: 900px) { .charts-row { grid-template-columns: 1fr; } }
+
+    .chart-wrapper { position: relative; height: 270px; }
+
+    /* Donut */
+    .donut-wrapper {
+      position: relative; height: 270px;
+      display: flex; flex-direction: column;
     }
-
-    /* Summary */
-    #plan-summary-text {
-      font-size: 0.88rem; color: var(--text);
-      line-height: 1.7; padding: 0.25rem 0;
+    .donut-inner {
+      position: relative; flex: 1;
     }
+    .donut-center {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center; pointer-events: none;
+    }
+    .donut-pct { font-size: 1.8rem; font-weight: 900; color: var(--green); font-family: 'JetBrains Mono', monospace; }
+    .donut-lbl { font-size: 0.65rem; color: var(--muted); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
 
-    /* Directive cards */
-    .directive-list { display: flex; flex-direction: column; gap: 0.6rem; }
-    .directive-card {
-      display: flex; gap: 12px; align-items: flex-start;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 12px 14px;
+    /* ── DIRECTIVES ── */
+    .directive-list { display: flex; flex-direction: column; gap: 0.5rem; }
+    .d-card {
+      display: flex; gap: 10px; align-items: flex-start;
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 10px; padding: 11px 13px;
       transition: border-color 0.2s;
     }
-    .directive-card:hover { border-color: rgba(255,255,255,0.15); }
+    .d-card:hover { border-color: rgba(255,255,255,0.15); }
+    .d-idx {
+      flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%;
+      background: var(--surface2); color: var(--muted);
+      font-size: 0.65rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      margin-top: 2px;
+    }
     .d-badge {
       flex-shrink: 0;
-      font-size: 0.68rem; font-weight: 700;
+      font-size: 0.65rem; font-weight: 700;
       padding: 3px 8px; border-radius: 20px;
-      white-space: nowrap; margin-top: 1px;
+      white-space: nowrap; margin-top: 2px;
     }
-    .d-badge.solar_reduction    { background: rgba(245,197,24,0.15); color: var(--yellow); }
+    .d-badge.solar_reduction      { background: rgba(251,191,36,0.15);  color: var(--yellow); }
     .d-badge.minimum_battery_reserve { background: rgba(52,211,153,0.15); color: var(--green); }
-    .d-badge.no_charge_window   { background: rgba(167,139,250,0.15); color: var(--purple); }
-    .d-badge.no_discharge_window{ background: rgba(79,142,247,0.15); color: var(--blue); }
-    .d-badge.max_grid_window    { background: rgba(255,92,92,0.15); color: var(--red); }
-    .d-badge.no_op              { background: rgba(100,116,139,0.15); color: var(--muted); }
-    .d-note-idx {
-      flex-shrink: 0;
-      width: 20px; height: 20px; border-radius: 50%;
-      background: var(--surface2);
-      color: var(--muted); font-size: 0.68rem; font-weight: 700;
-      display: flex; align-items: center; justify-content: center;
-      margin-top: 1px;
-    }
-    .d-explanation { font-size: 0.83rem; color: var(--muted); line-height: 1.5; flex: 1; }
-    .d-adjustment {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.75rem; color: var(--teal);
-      margin-top: 4px;
-    }
+    .d-badge.no_charge_window     { background: rgba(167,139,250,0.15); color: var(--purple); }
+    .d-badge.no_discharge_window  { background: rgba(79,142,247,0.15);  color: var(--blue); }
+    .d-badge.max_grid_window      { background: rgba(248,113,113,0.15); color: var(--red); }
+    .d-badge.no_op                { background: rgba(100,116,139,0.12); color: var(--muted); }
+    .d-body { flex: 1; }
+    .d-explanation { font-size: 0.82rem; color: var(--muted); line-height: 1.5; }
+    .d-adj { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--teal); margin-top: 3px; }
 
-    /* Hourly table */
+    /* ── TABLE ── */
     .table-scroll { overflow-x: auto; }
-    table {
-      width: 100%; border-collapse: collapse;
-      font-size: 0.8rem;
-    }
+    table { width: 100%; border-collapse: collapse; font-size: 0.79rem; }
     thead th {
-      text-align: left; padding: 8px 10px;
-      font-size: 0.68rem; font-weight: 600;
-      color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase;
+      text-align: left; padding: 7px 10px;
+      font-size: 0.65rem; font-weight: 700; color: var(--muted);
+      letter-spacing: 0.1em; text-transform: uppercase;
       border-bottom: 1px solid var(--border);
     }
-    tbody tr {
-      border-bottom: 1px solid rgba(255,255,255,0.03);
-      transition: background 0.15s;
-    }
+    tbody tr { border-bottom: 1px solid rgba(255,255,255,0.025); transition: background 0.15s; }
     tbody tr:hover { background: var(--surface2); }
-    tbody td { padding: 7px 10px; font-family: 'JetBrains Mono', monospace; color: var(--text); }
+    tbody td { padding: 6px 10px; font-family: 'JetBrains Mono', monospace; color: var(--text); }
     tbody td:first-child { color: var(--muted); }
-    .action-charge    { color: var(--green); font-weight: 600; }
-    .action-discharge { color: var(--red); font-weight: 600; }
-    .action-idle      { color: var(--muted); }
+    .act-charge    { color: var(--green); font-weight: 600; }
+    .act-discharge { color: var(--red);   font-weight: 600; }
+    .act-idle      { color: var(--muted); }
 
-    /* Error toast */
-    #error-toast {
-      display: none;
-      background: rgba(255,92,92,0.12);
-      border: 1px solid rgba(255,92,92,0.3);
-      border-radius: 10px;
-      padding: 12px 16px;
-      font-size: 0.85rem; color: #ff8a8a;
-      margin-bottom: 0.5rem;
+    /* CSV button */
+    .card-actions { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+    .btn-csv {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 8px; color: var(--muted); font-size: 0.75rem;
+      padding: 6px 12px; cursor: pointer; font-family: inherit;
+      display: flex; align-items: center; gap: 5px;
+      transition: all 0.2s;
     }
+    .btn-csv:hover { border-color: var(--green); color: var(--green); }
 
-    /* Collapsible */
-    .collapsible-toggle {
-      background: none; border: none;
-      color: var(--muted); font-size: 0.78rem;
-      cursor: pointer; display: flex; align-items: center; gap: 4px;
-      padding: 0; font-family: 'Inter', sans-serif;
-      transition: color 0.2s;
-    }
-    .collapsible-toggle:hover { color: var(--text); }
-    .collapsible-toggle .chevron { transition: transform 0.2s; }
-    .collapsible-toggle.open .chevron { transform: rotate(180deg); }
-    .collapsible-body { overflow: hidden; transition: max-height 0.3s ease; }
+    /* Summary */
+    #plan-summary-text { font-size: 0.87rem; color: var(--muted); line-height: 1.7; }
 
-    /* Footer */
+    /* Highlight rows by action */
+    tr.row-charge { border-left: 2px solid rgba(52,211,153,0.3); }
+    tr.row-discharge { border-left: 2px solid rgba(248,113,113,0.3); }
+
+    /* ── FOOTER ── */
     footer {
-      text-align: center; padding: 2rem;
-      font-size: 0.78rem; color: var(--muted);
-      border-top: 1px solid var(--border);
       position: relative; z-index: 1;
+      text-align: center; padding: 2rem;
+      font-size: 0.75rem; color: var(--muted);
+      border-top: 1px solid var(--border);
     }
+    footer a { color: var(--teal); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    /* Fade-in animation */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .fade-up { animation: fadeUp 0.4s ease both; }
   </style>
 </head>
 <body>
@@ -415,105 +469,86 @@
 <!-- ── HEADER ── -->
 <header>
   <div class="logo">
-    <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="32" height="32" rx="8" fill="rgba(0,212,184,0.15)"/>
-      <path d="M18 4L8 18h8l-2 10 14-16h-8l2-8z" fill="#00d4b8"/>
-    </svg>
-    GridPilot <span>AI</span>
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24" fill="none">
+        <path d="M13 2L3 14h8l-2 8 12-12h-8l2-8z" fill="url(#lg)" stroke-width="0"/>
+        <defs>
+          <linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#00d4b8"/>
+            <stop offset="100%" stop-color="#4f8ef7"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+    <span class="logo-text">GridPilot <span>AI</span></span>
   </div>
-  <span class="tagline">LLM-powered 24-hour campus energy optimizer</span>
-  <div class="status-dot" id="status-indicator">API Online</div>
+  <div class="header-center">LLM-powered 24-hour campus energy optimizer · BUP CSE Fest 2026</div>
+  <div class="header-right">
+    <div class="status-pill" id="status-pill">
+      <div class="status-dot"></div>
+      <span id="status-text">Checking…</span>
+    </div>
+  </div>
 </header>
 
 <!-- ── MAIN ── -->
 <main>
 
-  <!-- ═══ LEFT PANEL ═══ -->
-  <div class="left-panel">
+  <!-- ════ LEFT PANEL ════ -->
+  <div style="display:flex;flex-direction:column;gap:1rem;">
 
-    <!-- Scenario ID -->
+    <!-- Scenario -->
     <div class="card">
       <div class="card-title">Scenario</div>
       <div class="scenario-bar">
-        <div class="field">
-          <label for="scenario-id">Scenario ID</label>
+        <div class="field"><label for="scenario-id">Scenario ID</label>
           <input type="text" id="scenario-id" value="DEMO-001" placeholder="e.g. CAMPUS-2026-09-18" />
         </div>
-        <button class="btn-load" id="btn-load-sample" title="Load SAMPLE-01 from the official test pack">Load Sample</button>
+        <button class="btn-load" id="btn-load-sample">⚡ Load Sample</button>
       </div>
     </div>
 
     <!-- Operator Notes -->
     <div class="card">
-      <div class="notes-header">
-        <div class="card-title" style="margin:0">Operator Notes <span style="color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0">(1–3)</span></div>
+      <div class="section-head">
+        <div class="card-title" style="margin:0">Operator Notes <span style="color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0;font-size:0.78rem">(1–3)</span></div>
       </div>
       <div id="notes-container"></div>
-      <button class="btn-add-note" id="btn-add-note">+ Add another note</button>
+      <button class="btn-add-note" id="btn-add-note">＋ Add another note</button>
     </div>
 
-    <!-- Battery Config -->
+    <!-- Battery -->
     <div class="card">
-      <div class="notes-header" style="margin-bottom:0.75rem">
+      <div class="section-head">
         <div class="card-title" style="margin:0">Battery Configuration</div>
-        <button class="collapsible-toggle open" id="bat-toggle">
-          <span>collapse</span>
-          <svg class="chevron" width="12" height="12" viewBox="0 0 12 12" fill="none">
-            <path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
+        <button class="btn-collapse open" id="bat-toggle" data-target="bat-body">
+          collapse <span class="chevron">▾</span>
         </button>
       </div>
-      <div class="collapsible-body" id="bat-body" style="max-height:500px">
+      <div class="collapsible" id="bat-body" style="max-height:400px">
         <div class="form-grid">
-          <div class="field">
-            <label for="bat-cap">Capacity (kWh)</label>
-            <input type="number" id="bat-cap" value="200" min="0" step="any" />
-          </div>
-          <div class="field">
-            <label for="bat-init">Initial Energy (kWh)</label>
-            <input type="number" id="bat-init" value="100" min="0" step="any" />
-          </div>
-          <div class="field">
-            <label for="bat-min">Min Reserve (kWh)</label>
-            <input type="number" id="bat-min" value="20" min="0" step="any" />
-          </div>
-          <div class="field">
-            <label for="bat-maxc">Max Charge (kWh/h)</label>
-            <input type="number" id="bat-maxc" value="50" min="0" step="any" />
-          </div>
-          <div class="field full">
-            <label for="bat-maxd">Max Discharge (kWh/h)</label>
-            <input type="number" id="bat-maxd" value="50" min="0" step="any" />
-          </div>
+          <div class="field"><label>Capacity (kWh)</label><input type="number" id="bat-cap" value="200" min="0" step="any"/></div>
+          <div class="field"><label>Initial Energy (kWh)</label><input type="number" id="bat-init" value="100" min="0" step="any"/></div>
+          <div class="field"><label>Min Reserve (kWh)</label><input type="number" id="bat-min" value="20" min="0" step="any"/></div>
+          <div class="field"><label>Max Charge (kWh/h)</label><input type="number" id="bat-maxc" value="50" min="0" step="any"/></div>
+          <div class="field full"><label>Max Discharge (kWh/h)</label><input type="number" id="bat-maxd" value="50" min="0" step="any"/></div>
         </div>
       </div>
     </div>
 
-    <!-- Hourly Data (collapsible) -->
+    <!-- 24h Data -->
     <div class="card">
-      <div class="notes-header" style="margin-bottom:0.75rem">
+      <div class="section-head">
         <div class="card-title" style="margin:0">24-Hour Energy Data</div>
-        <button class="collapsible-toggle" id="hours-toggle">
-          <span>expand</span>
-          <svg class="chevron" width="12" height="12" viewBox="0 0 12 12" fill="none">
-            <path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
+        <button class="btn-collapse" id="hours-toggle" data-target="hours-body">
+          expand <span class="chevron">▾</span>
         </button>
       </div>
-      <div style="font-size:0.8rem;color:var(--muted);margin-bottom:0.5rem">
-        Using default campus profile (100–120 kWh peak demand, solar noon profile).
-      </div>
-      <div class="collapsible-body" id="hours-body" style="max-height:0">
-        <div id="hours-grid" style="overflow-x:auto;margin-top:0.75rem">
+      <div style="font-size:0.78rem;color:var(--muted)">Default campus profile — expand to edit hour-by-hour.</div>
+      <div class="collapsible" id="hours-body" style="max-height:0">
+        <div style="margin-top:0.75rem;overflow-x:auto">
           <table id="hours-table">
-            <thead>
-              <tr>
-                <th>Hour</th>
-                <th>Demand (kWh)</th>
-                <th>Solar (kWh)</th>
-                <th>Tariff (৳/kWh)</th>
-              </tr>
-            </thead>
+            <thead><tr><th>Hour</th><th>Demand kWh</th><th>Solar kWh</th><th>Tariff ৳/kWh</th></tr></thead>
             <tbody id="hours-tbody"></tbody>
           </table>
         </div>
@@ -523,9 +558,20 @@
     <!-- Error -->
     <div id="error-toast"></div>
 
-    <!-- Submit -->
+    <!-- Progress -->
+    <div id="progress-steps">
+      <ul class="step-list">
+        <li class="step" id="step-1"><span class="step-icon" id="s1-icon">○</span> Sending request to API…</li>
+        <li class="step" id="step-2"><span class="step-icon" id="s2-icon">○</span> LLM interpreting operator notes…</li>
+        <li class="step" id="step-3"><span class="step-icon" id="s3-icon">○</span> Guardrail validation…</li>
+        <li class="step" id="step-4"><span class="step-icon" id="s4-icon">○</span> MILP optimizer solving 24-hour plan…</li>
+        <li class="step" id="step-5"><span class="step-icon" id="s5-icon">○</span> Replay validation &amp; computing totals…</li>
+      </ul>
+    </div>
+
+    <!-- Optimize -->
     <button id="btn-optimize">
-      <div class="btn-inner">
+      <div class="btn-inner" id="btn-inner">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
         </svg>
@@ -533,73 +579,104 @@
       </div>
     </button>
 
-  </div><!-- /left-panel -->
+  </div><!-- /left panel -->
 
-  <!-- ═══ RIGHT PANEL ═══ -->
+  <!-- ════ RIGHT PANEL ════ -->
   <div class="right-panel">
 
     <!-- Empty state -->
     <div id="empty-state" class="card">
-      <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
-        <rect width="64" height="64" rx="16" fill="rgba(0,212,184,0.08)"/>
-        <path d="M36 8L16 36h16l-4 20L52 28H36L40 8z" fill="var(--teal)" opacity="0.6"/>
-      </svg>
+      <div class="empty-icon">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none">
+          <path d="M13 2L3 14h8l-2 8 12-12h-8l2-8z" fill="url(#lg2)" />
+          <defs>
+            <linearGradient id="lg2" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#00d4b8"/>
+              <stop offset="100%" stop-color="#4f8ef7"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
       <h3>Ready to Optimize</h3>
-      <p>Enter your operator notes, configure the battery, and click <strong>Optimize</strong> to generate a cost-minimized 24-hour energy plan.</p>
+      <p>Enter operator notes describing today's conditions, configure the battery, then click <strong>Optimize</strong> to generate a cost-minimized 24-hour energy schedule.</p>
     </div>
 
     <!-- Results -->
     <div id="results">
 
-      <!-- Metric row -->
-      <div class="metrics-row">
+      <!-- Metrics row -->
+      <div class="metrics-row fade-up">
         <div class="metric-card cost">
-          <div class="metric-label">Total Grid Cost</div>
+          <div class="metric-label">Optimized Cost</div>
           <div class="metric-value" id="m-cost">—<span class="metric-unit">BDT</span></div>
+          <div class="metric-sub" id="m-cost-sub"></div>
+        </div>
+        <div class="metric-card saving">
+          <div class="metric-label">💰 Savings vs Baseline</div>
+          <div class="metric-value" id="m-saving">—<span class="metric-unit">BDT</span></div>
+          <div class="metric-sub" id="m-saving-pct"></div>
         </div>
         <div class="metric-card grid">
           <div class="metric-label">Total Grid Draw</div>
           <div class="metric-value" id="m-grid">—<span class="metric-unit">kWh</span></div>
+          <div class="metric-sub" id="m-grid-sub"></div>
         </div>
         <div class="metric-card peak">
           <div class="metric-label">Peak Grid Hour</div>
           <div class="metric-value" id="m-peak">—<span class="metric-unit">kWh</span></div>
+          <div class="metric-sub" id="m-peak-sub"></div>
         </div>
       </div>
 
-      <!-- Summary -->
-      <div class="card">
+      <!-- Plan summary -->
+      <div class="card fade-up">
         <div class="card-title">Plan Summary</div>
         <div id="plan-summary-text">—</div>
       </div>
 
       <!-- Directives -->
-      <div class="card">
-        <div class="card-title">Directive Interpretation</div>
+      <div class="card fade-up">
+        <div class="card-title">Directive Interpretation <span style="color:var(--muted);text-transform:none;font-weight:400;letter-spacing:0"> — powered by Gemini 2.5 Flash</span></div>
         <div class="directive-list" id="directive-list"></div>
       </div>
 
-      <!-- Chart -->
-      <div class="card">
-        <div class="card-title">24-Hour Energy Schedule</div>
-        <div class="chart-wrapper">
-          <canvas id="energy-chart"></canvas>
+      <!-- Charts row -->
+      <div class="charts-row">
+        <div class="card fade-up">
+          <div class="card-title">24-Hour Energy Schedule</div>
+          <div class="chart-wrapper"><canvas id="energy-chart"></canvas></div>
+        </div>
+        <div class="card fade-up">
+          <div class="card-title">Energy Source Mix</div>
+          <div class="donut-wrapper">
+            <div class="donut-inner">
+              <canvas id="donut-chart"></canvas>
+              <div class="donut-center">
+                <div class="donut-pct" id="donut-pct">—</div>
+                <div class="donut-lbl">Solar %</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
       <!-- Hourly plan table -->
-      <div class="card">
-        <div class="card-title">Hourly Plan Detail</div>
+      <div class="card fade-up">
+        <div class="card-actions">
+          <div class="card-title" style="margin:0">Hourly Plan Detail</div>
+          <button class="btn-csv" id="btn-csv">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Export CSV
+          </button>
+        </div>
         <div class="table-scroll">
           <table>
             <thead>
               <tr>
-                <th>Hour</th>
-                <th>Grid (kWh)</th>
-                <th>Solar (kWh)</th>
-                <th>Action</th>
-                <th>Bat (kWh)</th>
-                <th>Bat After (kWh)</th>
+                <th>Hour</th><th>Demand kWh</th><th>Solar kWh</th>
+                <th>Grid kWh</th><th>Solar Used kWh</th>
+                <th>Action</th><th>Bat kWh</th><th>Bat After kWh</th>
+                <th>Cost ৳</th>
               </tr>
             </thead>
             <tbody id="plan-tbody"></tbody>
@@ -608,16 +685,17 @@
       </div>
 
     </div><!-- /results -->
-  </div><!-- /right-panel -->
+  </div><!-- /right panel -->
 
 </main>
 
 <footer>
-  GridPilot AI · BUP CSE Fest 2026 Hackathon · LLM: Gemini 2.0 Flash · Optimizer: PuLP/CBC MILP
+  GridPilot AI &nbsp;·&nbsp; BUP CSE Fest 2026 Hackathon &nbsp;·&nbsp;
+  LLM: <strong>Gemini 2.5 Flash</strong> &nbsp;·&nbsp; Optimizer: <strong>PuLP / CBC MILP</strong>
 </footer>
 
 <script>
-// ── Default 24-hour campus profile ──────────────────────────────────────────
+// ── Defaults ────────────────────────────────────────────────────────────────
 const DEFAULT_HOURS = [
   {hour:0,  demand_kwh:90,  solar_kwh:0,   tariff_bdt_per_kwh:6.00},
   {hour:1,  demand_kwh:82,  solar_kwh:0,   tariff_bdt_per_kwh:6.00},
@@ -645,104 +723,79 @@ const DEFAULT_HOURS = [
   {hour:23, demand_kwh:88,  solar_kwh:0,   tariff_bdt_per_kwh:6.00},
 ];
 
-// Official SAMPLE-01 for Load Sample button
 const SAMPLE_01 = {
   scenario_id: "SAMPLE-01",
   operator_notes: [
     "Facilities will wash the rooftop solar panels from noon until 2 PM. During cleaning, usable solar should be treated as roughly 25% of the forecast.",
     "The sports office moved next month's registration deadline."
   ],
-  battery: { capacity_kwh: 200, initial_energy_kwh: 100, minimum_energy_kwh: 20, max_charge_kwh_per_hour: 50, max_discharge_kwh_per_hour: 50 },
+  battery: { capacity_kwh:200, initial_energy_kwh:100, minimum_energy_kwh:20, max_charge_kwh_per_hour:50, max_discharge_kwh_per_hour:50 },
 };
 
 // ── Collapsibles ─────────────────────────────────────────────────────────────
-function initCollapsible(toggleId, bodyId) {
-  const toggle = document.getElementById(toggleId);
-  const body   = document.getElementById(bodyId);
-  toggle.addEventListener('click', () => {
-    const isOpen = toggle.classList.contains('open');
+document.querySelectorAll('.btn-collapse').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const body = document.getElementById(btn.dataset.target);
+    const isOpen = btn.classList.contains('open');
     if (isOpen) {
       body.style.maxHeight = '0';
-      toggle.querySelector('span').textContent = 'expand';
-      toggle.classList.remove('open');
+      btn.textContent = '';
+      btn.innerHTML = 'expand <span class="chevron">▾</span>';
+      btn.classList.remove('open');
     } else {
-      body.style.maxHeight = body.scrollHeight + 'px';
-      toggle.querySelector('span').textContent = 'collapse';
-      toggle.classList.add('open');
+      body.style.maxHeight = body.scrollHeight + 500 + 'px';
+      btn.innerHTML = 'collapse <span class="chevron">▾</span>';
+      btn.classList.add('open');
     }
   });
-}
-initCollapsible('bat-toggle', 'bat-body');
-initCollapsible('hours-toggle', 'hours-body');
+});
 
-// ── Notes management ─────────────────────────────────────────────────────────
+// ── Notes ────────────────────────────────────────────────────────────────────
 const notesContainer = document.getElementById('notes-container');
 const btnAddNote = document.getElementById('btn-add-note');
 
-function renderNoteItem(index, value = '') {
+function addNote(val = '') {
+  if (notesContainer.children.length >= 3) return;
+  const idx = notesContainer.children.length;
   const div = document.createElement('div');
-  div.className = 'note-item';
-  div.dataset.index = index;
+  div.className = 'note-row';
   div.innerHTML = `
-    <div class="note-number">${index + 1}</div>
-    <textarea class="note-input" placeholder="e.g. Rooftop panels will be cleaned from noon to 2 PM, cutting solar to ~25%..."
-      rows="3">${value}</textarea>
-    <button class="btn-del" title="Remove note">✕</button>
+    <div class="note-num">${idx+1}</div>
+    <textarea class="note-input" placeholder="e.g. Rooftop panels will be cleaned from noon to 2 PM, cutting solar to ~25%…" rows="3">${val}</textarea>
+    <button class="btn-del-note" title="Remove">✕</button>
   `;
-  div.querySelector('.btn-del').addEventListener('click', () => removeNote(div));
-  return div;
-}
-
-function renumberNotes() {
-  [...notesContainer.querySelectorAll('.note-item')].forEach((item, i) => {
-    item.querySelector('.note-number').textContent = i + 1;
-    item.dataset.index = i;
+  div.querySelector('.btn-del-note').addEventListener('click', () => {
+    if (notesContainer.children.length <= 1) return;
+    div.remove();
+    renumber();
   });
+  notesContainer.appendChild(div);
+  renumber();
+}
+function renumber() {
+  [...notesContainer.querySelectorAll('.note-num')].forEach((n,i) => n.textContent = i+1);
   btnAddNote.style.display = notesContainer.children.length >= 3 ? 'none' : '';
 }
-
-function addNote(value = '') {
-  const count = notesContainer.children.length;
-  if (count >= 3) return;
-  notesContainer.appendChild(renderNoteItem(count, value));
-  renumberNotes();
-}
-
-function removeNote(div) {
-  if (notesContainer.children.length <= 1) return; // keep at least 1
-  div.remove();
-  renumberNotes();
-}
-
-// Initialize with 2 blank notes
-addNote('');
-addNote('');
-
+addNote(''); addNote('');
 btnAddNote.addEventListener('click', () => addNote(''));
 
-// ── Hourly table ─────────────────────────────────────────────────────────────
+// ── Hours table ───────────────────────────────────────────────────────────────
 const hoursTbody = document.getElementById('hours-tbody');
 DEFAULT_HOURS.forEach(h => {
   const tr = document.createElement('tr');
-  tr.innerHTML = `
-    <td>${String(h.hour).padStart(2,'0')}:00</td>
-    <td><input type="number" id="dem-${h.hour}" value="${h.demand_kwh}" step="any" min="0" style="width:80px;background:transparent;border:none;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:0.8rem;outline:none;" /></td>
-    <td><input type="number" id="sol-${h.hour}" value="${h.solar_kwh}" step="any" min="0" style="width:70px;background:transparent;border:none;color:var(--teal);font-family:'JetBrains Mono',monospace;font-size:0.8rem;outline:none;" /></td>
-    <td><input type="number" id="tar-${h.hour}" value="${h.tariff_bdt_per_kwh}" step="any" min="0" style="width:60px;background:transparent;border:none;color:var(--yellow);font-family:'JetBrains Mono',monospace;font-size:0.8rem;outline:none;" /></td>
-  `;
+  const s = `background:transparent;border:none;color:inherit;font-family:'JetBrains Mono',monospace;font-size:0.78rem;outline:none;width:`;
+  tr.innerHTML = `<td>${String(h.hour).padStart(2,'0')}:00</td>
+    <td><input type="number" id="dem-${h.hour}" value="${h.demand_kwh}" step="any" min="0" style="${s}75px;color:var(--text)"></td>
+    <td><input type="number" id="sol-${h.hour}" value="${h.solar_kwh}"  step="any" min="0" style="${s}65px;color:var(--teal)"></td>
+    <td><input type="number" id="tar-${h.hour}" value="${h.tariff_bdt_per_kwh}" step="any" min="0" style="${s}55px;color:var(--yellow)"></td>`;
   hoursTbody.appendChild(tr);
 });
 
-// ── Load sample ──────────────────────────────────────────────────────────────
+// ── Load Sample ───────────────────────────────────────────────────────────────
 document.getElementById('btn-load-sample').addEventListener('click', () => {
-  // Set scenario ID
   document.getElementById('scenario-id').value = SAMPLE_01.scenario_id;
-
-  // Set notes
   notesContainer.innerHTML = '';
-  SAMPLE_01.operator_notes.forEach((n, i) => addNote(n));
-
-  // Set battery
+  SAMPLE_01.operator_notes.forEach(n => addNote(n));
   document.getElementById('bat-cap').value  = SAMPLE_01.battery.capacity_kwh;
   document.getElementById('bat-init').value = SAMPLE_01.battery.initial_energy_kwh;
   document.getElementById('bat-min').value  = SAMPLE_01.battery.minimum_energy_kwh;
@@ -750,94 +803,125 @@ document.getElementById('btn-load-sample').addEventListener('click', () => {
   document.getElementById('bat-maxd').value = SAMPLE_01.battery.max_discharge_kwh_per_hour;
 });
 
-// ── Collect form data ─────────────────────────────────────────────────────────
+// ── Collect payload ────────────────────────────────────────────────────────────
 function getPayload() {
   const notes = [...notesContainer.querySelectorAll('.note-input')]
     .map(t => t.value.trim()).filter(Boolean);
   if (!notes.length) throw new Error('Enter at least one operator note.');
-
   const hours = DEFAULT_HOURS.map(h => ({
     hour: h.hour,
-    demand_kwh:        parseFloat(document.getElementById(`dem-${h.hour}`).value) || 0,
-    solar_kwh:         parseFloat(document.getElementById(`sol-${h.hour}`).value) || 0,
-    tariff_bdt_per_kwh: parseFloat(document.getElementById(`tar-${h.hour}`).value) || 0,
+    demand_kwh: parseFloat(document.getElementById(`dem-${h.hour}`).value)||0,
+    solar_kwh:  parseFloat(document.getElementById(`sol-${h.hour}`).value)||0,
+    tariff_bdt_per_kwh: parseFloat(document.getElementById(`tar-${h.hour}`).value)||0,
   }));
-
   return {
-    scenario_id:    document.getElementById('scenario-id').value.trim() || 'DEMO-001',
-    operator_notes: notes,
-    hours,
+    scenario_id: document.getElementById('scenario-id').value.trim()||'DEMO-001',
+    operator_notes: notes, hours,
     battery: {
-      capacity_kwh:            parseFloat(document.getElementById('bat-cap').value),
-      initial_energy_kwh:      parseFloat(document.getElementById('bat-init').value),
-      minimum_energy_kwh:      parseFloat(document.getElementById('bat-min').value),
+      capacity_kwh: parseFloat(document.getElementById('bat-cap').value),
+      initial_energy_kwh: parseFloat(document.getElementById('bat-init').value),
+      minimum_energy_kwh: parseFloat(document.getElementById('bat-min').value),
       max_charge_kwh_per_hour: parseFloat(document.getElementById('bat-maxc').value),
       max_discharge_kwh_per_hour: parseFloat(document.getElementById('bat-maxd').value),
     }
   };
 }
 
-// ── Chart ─────────────────────────────────────────────────────────────────────
-let chartInstance = null;
+// ── Charts ────────────────────────────────────────────────────────────────────
+let barChart = null, donutChart = null;
 
-function renderChart(hourly_plan) {
-  const labels = hourly_plan.map(e => `${String(e.hour).padStart(2,'0')}:00`);
-  const gridData    = hourly_plan.map(e => e.grid_kwh);
-  const solarData   = hourly_plan.map(e => e.solar_used_kwh);
-  const chargeData  = hourly_plan.map(e => e.battery_action === 'charge' ? e.battery_kwh : 0);
-  const dischgData  = hourly_plan.map(e => e.battery_action === 'discharge' ? e.battery_kwh : 0);
-
-  if (chartInstance) chartInstance.destroy();
-
-  const ctx = document.getElementById('energy-chart').getContext('2d');
-  chartInstance = new Chart(ctx, {
+function renderBarChart(hp) {
+  const labels   = hp.map(e => `${String(e.hour).padStart(2,'0')}:00`);
+  const gridD    = hp.map(e => e.grid_kwh);
+  const solarD   = hp.map(e => e.solar_used_kwh);
+  const dischargeD = hp.map(e => e.battery_action==='discharge' ? e.battery_kwh : 0);
+  const chargeD  = hp.map(e => e.battery_action==='charge'    ? e.battery_kwh : 0);
+  if (barChart) barChart.destroy();
+  barChart = new Chart(document.getElementById('energy-chart').getContext('2d'), {
     type: 'bar',
-    data: {
-      labels,
-      datasets: [
-        { label: 'Grid', data: gridData,    backgroundColor: 'rgba(255,92,92,0.75)',    stack: 'supply' },
-        { label: 'Solar', data: solarData,   backgroundColor: 'rgba(245,197,24,0.75)',   stack: 'supply' },
-        { label: 'Discharge', data: dischgData, backgroundColor: 'rgba(52,211,153,0.75)', stack: 'supply' },
-        { label: 'Charge', data: chargeData, backgroundColor: 'rgba(167,139,250,0.5)',  stack: 'use',    hidden: false },
-      ]
-    },
+    data: { labels, datasets: [
+      { label:'Grid',      data:gridD,     backgroundColor:'rgba(248,113,113,0.75)', stack:'s' },
+      { label:'Solar',     data:solarD,    backgroundColor:'rgba(251,191,36,0.75)',  stack:'s' },
+      { label:'Discharge', data:dischargeD,backgroundColor:'rgba(52,211,153,0.75)', stack:'s' },
+      { label:'Charge',    data:chargeD,   backgroundColor:'rgba(167,139,250,0.45)', stack:'u' },
+    ]},
     options: {
-      responsive: true, maintainAspectRatio: false,
-      interaction: { mode: 'index', intersect: false },
-      plugins: {
-        legend: {
-          labels: { color: '#94a3b8', font: { size: 11 }, boxWidth: 12 }
-        },
-        tooltip: {
-          backgroundColor: 'rgba(15,22,41,0.95)',
-          borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1,
-          titleColor: '#e2e8f0', bodyColor: '#94a3b8',
-          callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y.toFixed(2)} kWh` }
-        }
+      responsive:true, maintainAspectRatio:false,
+      interaction:{ mode:'index', intersect:false },
+      plugins:{
+        legend:{ labels:{ color:'#94a3b8', font:{size:11}, boxWidth:12 }},
+        tooltip:{ backgroundColor:'rgba(5,13,26,0.95)', borderColor:'rgba(255,255,255,0.1)', borderWidth:1,
+          titleColor:'#e2e8f0', bodyColor:'#94a3b8',
+          callbacks:{ label: c => ` ${c.dataset.label}: ${c.parsed.y.toFixed(2)} kWh` }}
       },
-      scales: {
-        x: {
-          stacked: true,
-          ticks: { color: '#475569', font: { size: 10 }, maxRotation: 45 },
-          grid: { color: 'rgba(255,255,255,0.04)' }
-        },
-        y: {
-          stacked: true,
-          ticks: { color: '#475569', font: { size: 10 } },
-          grid: { color: 'rgba(255,255,255,0.04)' },
-          title: { display: true, text: 'kWh', color: '#475569', font: { size: 11 } }
-        }
+      scales:{
+        x:{ stacked:true, ticks:{color:'#475569',font:{size:9},maxRotation:45}, grid:{color:'rgba(255,255,255,0.03)'} },
+        y:{ stacked:true, ticks:{color:'#475569',font:{size:10}}, grid:{color:'rgba(255,255,255,0.03)'},
+            title:{display:true,text:'kWh',color:'#475569',font:{size:11}} }
       }
     }
   });
 }
 
-// ── Render results ───────────────────────────────────────────────────────────
-function renderResults(data) {
+function renderDonut(hp) {
+  const totalSolar  = hp.reduce((a,e) => a + e.solar_used_kwh, 0);
+  const totalGrid   = hp.reduce((a,e) => a + e.grid_kwh, 0);
+  const totalDisch  = hp.reduce((a,e) => e.battery_action==='discharge' ? a+e.battery_kwh : a, 0);
+  const total = totalSolar + totalGrid + totalDisch || 1;
+  const solarPct = Math.round(totalSolar/total*100);
+
+  document.getElementById('donut-pct').textContent = solarPct + '%';
+
+  if (donutChart) donutChart.destroy();
+  donutChart = new Chart(document.getElementById('donut-chart').getContext('2d'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Grid', 'Solar', 'Battery Discharge'],
+      datasets:[{ data:[totalGrid, totalSolar, totalDisch],
+        backgroundColor:['rgba(248,113,113,0.8)','rgba(251,191,36,0.8)','rgba(52,211,153,0.8)'],
+        borderColor:['rgba(248,113,113,0.3)','rgba(251,191,36,0.3)','rgba(52,211,153,0.3)'],
+        borderWidth:1, hoverOffset:4 }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      cutout:'68%',
+      plugins:{
+        legend:{ position:'bottom', labels:{ color:'#94a3b8', font:{size:11}, boxWidth:10, padding:12 }},
+        tooltip:{ backgroundColor:'rgba(5,13,26,0.95)', borderColor:'rgba(255,255,255,0.1)', borderWidth:1,
+          callbacks:{ label: c => ` ${c.label}: ${c.parsed.toFixed(1)} kWh (${Math.round(c.parsed/total*100)}%)` }}
+      }
+    }
+  });
+}
+
+// ── Render results ────────────────────────────────────────────────────────────
+let lastPlanData = null;
+
+function renderResults(data, baseline) {
+  lastPlanData = { data, baseline };
+
   // Metrics
-  document.getElementById('m-cost').innerHTML = `${data.total_cost_bdt.toLocaleString('en-BD', {maximumFractionDigits:2})}<span class="metric-unit">BDT</span>`;
-  document.getElementById('m-grid').innerHTML = `${data.total_grid_kwh.toFixed(2)}<span class="metric-unit">kWh</span>`;
-  document.getElementById('m-peak').innerHTML = `${data.peak_grid_kwh.toFixed(2)}<span class="metric-unit">kWh</span>`;
+  const optCost = data.total_cost_bdt;
+  const baseCost = baseline ? baseline.total_cost_bdt : null;
+  const saved = baseCost !== null ? baseCost - optCost : null;
+  const pct   = saved !== null && baseCost ? (saved/baseCost*100) : null;
+
+  document.getElementById('m-cost').innerHTML = `${optCost.toLocaleString('en-BD',{maximumFractionDigits:0})}<span class="metric-unit">BDT</span>`;
+  document.getElementById('m-cost-sub').innerHTML = baseCost ? `<span class="up">↓</span> Baseline: ৳${baseCost.toLocaleString('en-BD',{maximumFractionDigits:0})}` : '';
+
+  if (saved !== null) {
+    document.getElementById('m-saving').innerHTML = `${saved.toLocaleString('en-BD',{maximumFractionDigits:0})}<span class="metric-unit">BDT</span>`;
+    document.getElementById('m-saving-pct').innerHTML = `<span class="up">↑ ${pct.toFixed(1)}% cheaper</span> than no-battery plan`;
+  }
+
+  document.getElementById('m-grid').innerHTML = `${data.total_grid_kwh.toFixed(1)}<span class="metric-unit">kWh</span>`;
+  if (baseline) {
+    const gridSaved = baseline.total_grid_kwh - data.total_grid_kwh;
+    document.getElementById('m-grid-sub').innerHTML = `<span class="up">↓ ${gridSaved.toFixed(1)} kWh</span> less than baseline`;
+  }
+
+  document.getElementById('m-peak').innerHTML = `${data.peak_grid_kwh.toFixed(1)}<span class="metric-unit">kWh</span>`;
+  document.getElementById('m-peak-sub').textContent = 'highest single-hour grid draw';
 
   // Summary
   document.getElementById('plan-summary-text').textContent = data.plan_summary;
@@ -846,110 +930,191 @@ function renderResults(data) {
   const dl = document.getElementById('directive-list');
   dl.innerHTML = '';
   data.directive_interpretation.forEach(d => {
-    const card = document.createElement('div');
-    card.className = 'directive-card';
-    const adjStr = d.structured_adjustment
-      ? `<div class="d-adjustment">${JSON.stringify(d.structured_adjustment)}</div>` : '';
-    card.innerHTML = `
-      <div class="d-note-idx">${d.note_index}</div>
+    const el = document.createElement('div');
+    el.className = 'd-card';
+    el.innerHTML = `
+      <div class="d-idx">${d.note_index}</div>
       <div class="d-badge ${d.directive_type}">${d.directive_type.replace(/_/g,' ')}</div>
-      <div style="flex:1">
-        <div class="d-explanation">${d.explanation || '—'}</div>
-        ${adjStr}
-      </div>
-    `;
-    dl.appendChild(card);
+      <div class="d-body">
+        <div class="d-explanation">${d.explanation||'—'}</div>
+        ${d.structured_adjustment ? `<div class="d-adj">${JSON.stringify(d.structured_adjustment)}</div>` : ''}
+      </div>`;
+    dl.appendChild(el);
   });
 
-  // Hourly table
+  // Table
   const tbody = document.getElementById('plan-tbody');
   tbody.innerHTML = '';
+  const hoursMap = {};
+  DEFAULT_HOURS.forEach(h => hoursMap[h.hour] = h);
   data.hourly_plan.forEach(e => {
     const tr = document.createElement('tr');
-    const actionClass = `action-${e.battery_action}`;
+    if (e.battery_action==='charge') tr.className='row-charge';
+    else if (e.battery_action==='discharge') tr.className='row-discharge';
+    const hd = hoursMap[e.hour];
+    const cost = (e.grid_kwh * (hd ? hd.tariff_bdt_per_kwh : 0)).toFixed(2);
     tr.innerHTML = `
       <td>${String(e.hour).padStart(2,'0')}:00</td>
+      <td>${(hd ? hd.demand_kwh : '—')}</td>
+      <td style="color:var(--teal)">${(hd ? hd.solar_kwh : '—')}</td>
       <td>${e.grid_kwh.toFixed(2)}</td>
       <td>${e.solar_used_kwh.toFixed(2)}</td>
-      <td class="${actionClass}">${e.battery_action}</td>
+      <td class="act-${e.battery_action}">${e.battery_action}</td>
       <td>${e.battery_kwh.toFixed(2)}</td>
       <td>${e.battery_energy_after_kwh.toFixed(2)}</td>
-    `;
+      <td style="color:var(--yellow)">৳${cost}</td>`;
     tbody.appendChild(tr);
   });
 
-  // Chart
-  renderChart(data.hourly_plan);
+  // Charts
+  renderBarChart(data.hourly_plan);
+  renderDonut(data.hourly_plan);
 
-  // Show results
+  // Show
   document.getElementById('empty-state').style.display = 'none';
   document.getElementById('results').style.display = 'flex';
 }
 
+// ── CSV Export ────────────────────────────────────────────────────────────────
+document.getElementById('btn-csv').addEventListener('click', () => {
+  if (!lastPlanData) return;
+  const { data } = lastPlanData;
+  const rows = [['Hour','Demand_kWh','Solar_kWh','Tariff_BDT_per_kWh','Grid_kWh','Solar_Used_kWh','Battery_Action','Battery_kWh','Battery_After_kWh','Cost_BDT']];
+  const hm = {};
+  DEFAULT_HOURS.forEach(h => hm[h.hour] = h);
+  data.hourly_plan.forEach(e => {
+    const hd = hm[e.hour];
+    rows.push([
+      `${String(e.hour).padStart(2,'0')}:00`,
+      hd ? hd.demand_kwh : '',
+      hd ? hd.solar_kwh : '',
+      hd ? hd.tariff_bdt_per_kwh : '',
+      e.grid_kwh.toFixed(4),
+      e.solar_used_kwh.toFixed(4),
+      e.battery_action,
+      e.battery_kwh.toFixed(4),
+      e.battery_energy_after_kwh.toFixed(4),
+      (e.grid_kwh * (hd ? hd.tariff_bdt_per_kwh : 0)).toFixed(2)
+    ]);
+  });
+  rows.push([]);
+  rows.push(['Scenario', data.scenario_id]);
+  rows.push(['Total Grid kWh', data.total_grid_kwh]);
+  rows.push(['Total Cost BDT', data.total_cost_bdt]);
+  rows.push(['Peak Grid kWh', data.peak_grid_kwh]);
+
+  const csv = rows.map(r => r.join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv'}));
+  a.download = `gridpilot_${data.scenario_id}_plan.csv`;
+  a.click();
+});
+
+// ── Progress stepper ──────────────────────────────────────────────────────────
+let stepTimer = null;
+function startSteps() {
+  const steps = [1,2,3,4,5];
+  document.getElementById('progress-steps').style.display = 'block';
+  steps.forEach(i => {
+    const s = document.getElementById(`step-${i}`);
+    s.className = 'step';
+    document.getElementById(`s${i}-icon`).textContent = '○';
+  });
+  let cur = 1;
+  const durations = [300, 1200, 400, 2500, 400];
+  function advance(i) {
+    if (i > 5) return;
+    const s = document.getElementById(`step-${i}`);
+    const icon = document.getElementById(`s${i}-icon`);
+    s.className = 'step active';
+    icon.outerHTML = `<div class="step-spinner" id="s${i}-icon"></div>`;
+    stepTimer = setTimeout(() => {
+      document.getElementById(`step-${i}`).className = 'step done';
+      const ic = document.getElementById(`s${i}-icon`);
+      if (ic) ic.outerHTML = `<span class="step-icon" id="s${i}-icon">✓</span>`;
+      advance(i + 1);
+    }, durations[i-1]);
+  }
+  advance(1);
+}
+function stopSteps() {
+  clearTimeout(stepTimer);
+  // Mark all done
+  for (let i=1;i<=5;i++) {
+    document.getElementById(`step-${i}`).className = 'step done';
+    const ic = document.getElementById(`s${i}-icon`);
+    if (ic) ic.outerHTML = `<span class="step-icon" id="s${i}-icon">✓</span>`;
+  }
+  setTimeout(() => {
+    document.getElementById('progress-steps').style.display = 'none';
+  }, 1200);
+}
+
+// ── Error helpers ─────────────────────────────────────────────────────────────
+const errorToast = document.getElementById('error-toast');
+function showError(msg) { errorToast.style.display='block'; errorToast.innerHTML='⚠ '+msg; }
+function clearError()   { errorToast.style.display='none'; errorToast.textContent=''; }
+
 // ── Submit ────────────────────────────────────────────────────────────────────
-const btnOptimize = document.getElementById('btn-optimize');
-const errorToast  = document.getElementById('error-toast');
+const btnOpt = document.getElementById('btn-optimize');
 
-function showError(msg) {
-  errorToast.style.display = 'block';
-  errorToast.textContent = '⚠ ' + msg;
-}
-function clearError() {
-  errorToast.style.display = 'none';
-  errorToast.textContent = '';
-}
-
-btnOptimize.addEventListener('click', async () => {
+btnOpt.addEventListener('click', async () => {
   clearError();
   let payload;
-  try { payload = getPayload(); }
-  catch (e) { showError(e.message); return; }
+  try { payload = getPayload(); } catch(e) { showError(e.message); return; }
 
-  // Loading state
-  btnOptimize.disabled = true;
-  btnOptimize.querySelector('.btn-inner').innerHTML = `
-    <div class="spinner"></div> Optimizing… (LLM + MILP solving)
-  `;
+  btnOpt.disabled = true;
+  document.getElementById('btn-inner').innerHTML = `<div class="spinner"></div> Optimizing…`;
+  startSteps();
 
   try {
-    const resp = await fetch('/optimize-energy', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-      signal: AbortSignal.timeout(32000),
-    });
+    // Run optimize and baseline in parallel
+    const [optResp, baseResp] = await Promise.all([
+      fetch('/optimize-energy', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify(payload), signal: AbortSignal.timeout(33000)
+      }),
+      fetch('/baseline-cost', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ hours: payload.hours }),
+        signal: AbortSignal.timeout(5000)
+      }).catch(() => null)
+    ]);
 
-    if (!resp.ok) {
-      const err = await resp.json().catch(() => ({}));
-      throw new Error(err.error || `HTTP ${resp.status}`);
+    if (!optResp.ok) {
+      const err = await optResp.json().catch(() => ({}));
+      throw new Error(err.error || `HTTP ${optResp.status}`);
     }
 
-    const data = await resp.json();
-    renderResults(data);
-  } catch (e) {
-    showError(e.message || 'Request failed. Is the service running?');
+    const data = await optResp.json();
+    const baseline = baseResp && baseResp.ok ? await baseResp.json() : null;
+
+    stopSteps();
+    renderResults(data, baseline);
+  } catch(e) {
+    clearTimeout(stepTimer);
+    document.getElementById('progress-steps').style.display = 'none';
+    showError(e.message || 'Request failed. Check the service is running.');
   } finally {
-    btnOptimize.disabled = false;
-    btnOptimize.querySelector('.btn-inner').innerHTML = `
+    btnOpt.disabled = false;
+    document.getElementById('btn-inner').innerHTML = `
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
         <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-      </svg>
-      Optimize 24-Hour Plan
-    `;
+      </svg> Optimize 24-Hour Plan`;
   }
 });
 
-// ── Health check on load ──────────────────────────────────────────────────────
+// ── Health check ──────────────────────────────────────────────────────────────
 (async () => {
+  const pill = document.getElementById('status-pill');
+  const txt  = document.getElementById('status-text');
   try {
     const r = await fetch('/health');
     if (!r.ok) throw new Error();
-    const dot = document.getElementById('status-indicator');
-    dot.textContent = 'API Online';
+    txt.textContent = 'API Online';
   } catch {
-    const dot = document.getElementById('status-indicator');
-    dot.style.color = 'var(--red)';
-    dot.textContent = 'API Offline';
+    pill.classList.add('offline');
+    txt.textContent = 'API Offline';
   }
 })();
 </script>
