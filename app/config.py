@@ -10,7 +10,7 @@ load_dotenv()
 
 # LLM provider settings
 LLM_API_KEY: str = os.environ.get("LLM_API_KEY", "")
-LLM_MODEL: str = os.environ.get("LLM_MODEL", "gemini-2.0-flash")
+LLM_MODEL: str = os.environ.get("LLM_MODEL", "gemini-2.5-flash")
 LLM_PROVIDER: str = os.environ.get("LLM_PROVIDER", "google")  # "google" | "openrouter" | "anthropic" | "openai"
 
 # Service settings

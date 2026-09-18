@@ -14,10 +14,12 @@ from __future__ import annotations
 import asyncio
 import logging
 import traceback
+from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import ValidationError
 
 from app import config
@@ -49,6 +51,15 @@ app = FastAPI(
     description="LLM-assisted 24-hour campus energy optimizer (GridWise LLM)",
     version="1.0.0",
 )
+
+# Serve the web dashboard from /
+STATIC_DIR = Path(__file__).parent / "static"
+app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
+
+
+@app.get("/", include_in_schema=False)
+async def root():
+    return FileResponse(str(STATIC_DIR / "index.html"))
 
 
 # ---------------------------------------------------------------------------
